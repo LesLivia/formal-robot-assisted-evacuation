@@ -441,7 +441,7 @@ to setup
   set-time   ;nw
 
   if ENABLE_FRAME_GENERATION [
-    let errasing_frames (shell:exec "rm" "/home/workspace/frames/*")
+    let errasing_frames (shell:exec "rm" "/Users/lestingi/Desktop/phd-workspace/SaR/robot-assisted-evacuation/workspace/frames/*")
   ]
 end
 
@@ -833,7 +833,7 @@ end
 to write-png-frame
    if ENABLE_FRAME_GENERATION [
      let suffix (word SIMULATION_ID "_" ticks ".png")
-     export-view (word "/home/workspace/frames/view_" suffix)
+     export-view (word "/Users/lestingi/Desktop/phd-workspace/SaR/robot-assisted-evacuation/workspace/frames/view_" suffix)
      ; Uncomment only when using the GUI
      ;export-interface (word "/home/results/frames/interface_" word ticks ".png")
      log-turtle (word "Frames written at /frames") nobody
@@ -1565,11 +1565,17 @@ to-report request-candidate-help?
     ]
   ]
 
+  let social_identity get_social_identity candidate-helper victim-found
+  let word_social_identity (word social_identity)
+
+  user-message word "Social identity: " social_identity
+
   ; Calling the adaptive controller using Python
   let controller-response (shell:exec
-    (item 0 CONTROLLER_PYTHON_COMMAND) (item 1 CONTROLLER_PYTHON_COMMAND) (item 2 CONTROLLER_PYTHON_COMMAND) (item 3 CONTROLLER_PYTHON_COMMAND) (item 4 CONTROLLER_PYTHON_COMMAND)
+    (item 0 CONTROLLER_PYTHON_COMMAND) ; (item 1 CONTROLLER_PYTHON_COMMAND) (item 2 CONTROLLER_PYTHON_COMMAND) (item 3 CONTROLLER_PYTHON_COMMAND) (item 4 CONTROLLER_PYTHON_COMMAND)
     CONTROLLER_PYTHON_SCRIPT
-    simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age helper-fallen-distance staff-fallen-distance
+    word_social_identity
+    ;; simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age helper-fallen-distance staff-fallen-distance
   )
 
   log-turtle "staff-fallen-distance " staff-fallen-distance
@@ -1585,6 +1591,8 @@ to-report request-candidate-help?
   if member? "ask-help" controller-response [
     set result TRUE
   ]
+
+  user-message word "Decision: " controller-response
 
   report result
 
@@ -2482,7 +2490,7 @@ number_passengers
 number_passengers
 1
 6743
-800
+462
 1
 1
 NIL
@@ -2555,7 +2563,7 @@ _number_staff_members
 _number_staff_members
 0
 64
-0
+32
 1
 1
 NIL

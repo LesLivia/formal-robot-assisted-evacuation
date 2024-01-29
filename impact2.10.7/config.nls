@@ -148,16 +148,18 @@ to setup-environment
   set ROBOT_REQUEST_BONUS 0.2
   
   ; For evacuation time experiments, keep them all false.
-  set REQUEST_STAFF_SUPPORT FALSE
-  set REQUEST_BYSTANDER_SUPPORT FALSE
+  set REQUEST_STAFF_SUPPORT TRUE
+  set REQUEST_BYSTANDER_SUPPORT TRUE
   set ENABLE_LOGGING FALSE
   set ENABLE_FRAME_GENERATION FALSE
   
   set SIMULATION_ID 0
   ; Change these according to your Anaconda installation.
   ; Use the config below for evacuation time experiments.
-  set CONTROLLER_PYTHON_COMMAND (list"/home/cgc87/anaconda3/bin/conda" "run" "-n" "wdywfm-adaptive-robot" "python")
-  set CONTROLLER_PYTHON_SCRIPT "/home/cgc87/github/wdywfm-adaptive-robot/abm_runner.py"
+  ; set CONTROLLER_PYTHON_COMMAND (list"/home/cgc87/anaconda3/bin/conda" "run" "-n" "wdywfm-adaptive-robot" "python")
+  set CONTROLLER_PYTHON_COMMAND (list"python3")
+  ; set CONTROLLER_PYTHON_SCRIPT "/home/cgc87/github/wdywfm-adaptive-robot/abm_runner.py"
+  set CONTROLLER_PYTHON_SCRIPT "/Users/lestingi/Desktop/phd-workspace/SaR/formal-robot-assisted-evacuation/test_controller.py"
 
   ; Use the config below for simulating within docker.
   ; set CONTROLLER_PYTHON_COMMAND (list"/opt/conda/bin/conda" "run" "-n" "robot-assisted-evacuation" "python")
