@@ -1,0 +1,29 @@
+{"version":1.0,"type":"state->regressor","representation":"map","actions":{
+		"0":"h.s->h.a { 1, tau, 1 }",
+		"1":"h.s->h.g { 1, tau, 1 }",
+		"2":"WAIT"
+	},"statevars":[
+		"h.location",
+		"h.id_type"
+	],"pointvars":[
+		"#t(0)",
+		"#time"
+	],"locationnames":{
+		"h.location":{
+			"0":"s",
+			"1":"e",
+			"2":"g",
+			"3":"a"
+		}
+	},"regressors":{
+		"(0,1)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						23.32650584712627,
+					"1":
+						27.99713069405788
+				}
+			}
+	}
+}
