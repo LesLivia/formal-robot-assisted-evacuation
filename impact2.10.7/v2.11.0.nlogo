@@ -441,7 +441,7 @@ to setup
   set-time   ;nw
 
   if ENABLE_FRAME_GENERATION [
-    let errasing_frames (shell:exec "rm" "/Users/lestingi/Desktop/phd-workspace/SaR/robot-assisted-evacuation/workspace/frames/*")
+    let errasing_frames (shell:exec "rm" "../workspace/frames/*")
   ]
 end
 
@@ -833,7 +833,7 @@ end
 to write-png-frame
    if ENABLE_FRAME_GENERATION [
      let suffix (word SIMULATION_ID "_" ticks ".png")
-     export-view (word "/Users/lestingi/Desktop/phd-workspace/SaR/robot-assisted-evacuation/workspace/frames/view_" suffix)
+     export-view (word "../workspace/frames/view_" suffix)
      ; Uncomment only when using the GUI
      ;export-interface (word "/home/results/frames/interface_" word ticks ".png")
      log-turtle (word "Frames written at /frames") nobody
@@ -2539,7 +2539,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-0
+1
 1
 -1000
 
@@ -2550,7 +2550,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-0
+1
 1
 -1000
 
