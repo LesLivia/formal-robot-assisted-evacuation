@@ -1,4 +1,4 @@
-from src.logger.logger import Logger
+from it.polimi.logger.logger import Logger
 
 LOGGER = Logger('main')
 
