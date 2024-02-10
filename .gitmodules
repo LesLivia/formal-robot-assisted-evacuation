@@ -1,0 +1,3 @@
+[submodule "stratego_generator/StrategyViz"]
+	path = stratego_generator/submodules/StrategyViz
+	url = https://github.com/LesLivia/StrategyViz
