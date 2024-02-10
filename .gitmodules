@@ -1,3 +1,6 @@
 [submodule "stratego_generator/StrategyViz"]
 	path = stratego_generator/submodules/StrategyViz
 	url = https://github.com/LesLivia/StrategyViz
+[submodule "stratego_generator/gi_estimator"]
+	path = stratego_generator/submodules/gi_estimator
+	url = https://github.com/LesLivia/gi_estimator.git
