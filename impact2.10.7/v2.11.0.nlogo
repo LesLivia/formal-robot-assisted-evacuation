@@ -1565,17 +1565,12 @@ to-report request-candidate-help?
     ]
   ]
 
-  let social_identity get_social_identity candidate-helper victim-found
-  let word_social_identity (word social_identity)
-
-  user-message word "Social identity: " social_identity
+  user-message (word "Social identity: " simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age helper-fallen-distance staff-fallen-distance)
 
   ; Calling the adaptive controller using Python
   let controller-response (shell:exec
     (item 0 CONTROLLER_PYTHON_COMMAND) ; (item 1 CONTROLLER_PYTHON_COMMAND) (item 2 CONTROLLER_PYTHON_COMMAND) (item 3 CONTROLLER_PYTHON_COMMAND) (item 4 CONTROLLER_PYTHON_COMMAND)
-    CONTROLLER_PYTHON_SCRIPT
-    word_social_identity
-    ;; simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age helper-fallen-distance staff-fallen-distance
+    CONTROLLER_PYTHON_SCRIPT simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age helper-fallen-distance staff-fallen-distance
   )
 
   log-turtle "staff-fallen-distance " staff-fallen-distance
