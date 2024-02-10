@@ -2,16 +2,11 @@ import configparser
 
 from it.polimi.logger.logger import Logger
 
-LOGGER = Logger('Strategy Manager')
+LOGGER = Logger('Code Manager')
 
 config = configparser.ConfigParser()
 config.read('./resources/config/config.ini')
 config.sections()
 
-
-def generate_strategy():
-    LOGGER.info(config['UPPAAL SETTINGS']['UPPAAL_SCRIPT_PATH'])
-
-
-def parse_strategy():
-    return
+def generate_code():
+    LOGGER.info(config['STRATEGY SETTINGS']['SCRIPT_PATH'])
