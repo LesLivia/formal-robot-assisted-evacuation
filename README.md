@@ -19,8 +19,7 @@ The tool generates an [Uppaal Stratego model](stratego_generator/it/polimi/mgrs/
 
 An [Uppaal Stratego][stratego] experiment is then performed to [generate](stratego_generator/it/polimi/mgrs/strategy_mgr.py) a verified and optimal strategy for the SaR robot. 
 
-The generated strategy is then [converted](stratego_generator/it/polimi/mgrs/code_mgr.py) into an executable Python script invoked at runtime by the [simulator](impact2.10.7) to get the best decision based on the current state of the system. 
-
+The generated strategy is then parsed by the [controller](stratego_generator/it/polimi/controllers/test_controller.py) (invoked at runtime by the [simulator](impact2.10.7)) to select the best decision based on the current state of the system. 
 
 Configuration File Setup
 -----------
