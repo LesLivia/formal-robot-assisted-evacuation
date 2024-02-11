@@ -1565,8 +1565,6 @@ to-report request-candidate-help?
     ]
   ]
 
-  user-message (word "Social identity: " simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age helper-fallen-distance staff-fallen-distance)
-
   ; Calling the adaptive controller using Python
   let controller-response (shell:exec
     (item 0 CONTROLLER_PYTHON_COMMAND) ; (item 1 CONTROLLER_PYTHON_COMMAND) (item 2 CONTROLLER_PYTHON_COMMAND) (item 3 CONTROLLER_PYTHON_COMMAND) (item 4 CONTROLLER_PYTHON_COMMAND)
