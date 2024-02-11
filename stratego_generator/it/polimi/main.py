@@ -3,6 +3,7 @@ from it.polimi.mgrs.param_mgr import parse_params
 from it.polimi.mgrs.model_mgr import generate_model
 from it.polimi.mgrs.strategy_mgr import generate_strategy, parse_strategy
 from it.polimi.mgrs.code_mgr import generate_code
+from src.strategyviz.strategy2pta.opt_strategy import OptimizedStrategy
 
 LOGGER = Logger('main')
 
@@ -20,7 +21,7 @@ generate_strategy()
 
 LOGGER.info('Parsing Strategy...')
 
-parse_strategy()
+parsed_strategy: OptimizedStrategy = parse_strategy()
 
 LOGGER.info('Generating Decision-making Script...')
 
