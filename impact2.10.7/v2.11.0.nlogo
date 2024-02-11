@@ -2532,7 +2532,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-0
+1
 1
 -1000
 
@@ -2543,7 +2543,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-0
+1
 1
 -1000
 

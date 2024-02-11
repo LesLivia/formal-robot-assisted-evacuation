@@ -1,9 +1,14 @@
 import configparser
+import os
 from datetime import datetime
 from enum import Enum
 
 config = configparser.ConfigParser()
-config.read('./resources/config/config.ini')
+curr_path = os.getcwd()
+if 'impact' in curr_path:
+    config.read(curr_path.replace('impact2.10.7', 'stratego_generator/resources/config/config.ini'))
+else:
+    config.read('./resources/config/config.ini')
 config.sections()
 
 
