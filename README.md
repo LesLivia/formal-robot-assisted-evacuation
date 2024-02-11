@@ -3,7 +3,7 @@ Towards Verified Robot-Controlled SaR Scenarios
 
 The repository contains a tool to generate and simulate formally verified strategies for Search-and-Rescue (SaR) robots in evacuation scenarios.
 
-The tool builds upon the work presented in [1][paper1].
+The tool builds upon the work presented by [Gavidia-Calderon et al.][paper1]
 
 Authors:
 
@@ -17,7 +17,7 @@ Project Structure
 
 The tool generates an [Uppaal Stratego model](stratego_generator/it/polimi/mgrs/model_mgr.py) based on [input parameters](stratego_generator/it/polimi/mgrs/param_mgr.py).
 
-An [Uppaal Stratego][stratego] experiment is then to [generate](stratego_generator/it/polimi/mgrs/strategy_mgr.py) a verified and optimal strategy for the SaR robot. 
+An [Uppaal Stratego][stratego] experiment is then performed to [generate](stratego_generator/it/polimi/mgrs/strategy_mgr.py) a verified and optimal strategy for the SaR robot. 
 
 The generated strategy is then [converted](stratego_generator/it/polimi/mgrs/code_mgr.py) into an executable Python script invoked at runtime by the [simulator](impact2.10.7) to get the best decision based on the current state of the system. 
 
