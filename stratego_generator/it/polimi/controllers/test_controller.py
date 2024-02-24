@@ -46,7 +46,11 @@ strategy: OptimizedStrategy = parse_strategy()
 decisions = process_regressors(strategy.regressors)
 
 # Selects best decision based on strategy and current state
-if gi_prob > 0.5:
-    print(decisions['H_G'][0])
+if gi_prob <= 0.25:
+    print(decisions['GI_0_25'][0])
+elif 0.25 < gi_prob <= 0.5:
+    print(decisions['GI_25_50'][0])
+elif 0.5 < gi_prob <= 0.75:
+    print(decisions['GI_50_75'][0])
 else:
-    print(decisions['H_P'][0])
+    print(decisions['GI_75_100'][0])

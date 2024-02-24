@@ -8,8 +8,6 @@
 	],"pointvars":[
 		"#t(0)",
 		"#time",
-		"s.P_G",
-		"s.P_P",
 		"s.N_p",
 		"s.N_m",
 		"s.C_p",
@@ -21,8 +19,8 @@
 		},
 		"s.location":{
 			"0":"__init__",
-			"1":"H_G",
-			"2":"H_P",
+			"1":"GI_25_50",
+			"2":"GI_50_75",
 			"3":"R_N_G",
 			"4":"R_C_G",
 			"5":"R_N_P",
@@ -35,25 +33,45 @@
 			"12":"H_Np_P",
 			"13":"H_Nm_P",
 			"14":"H_Cp_P",
-			"15":"H_Cm_P"
+			"15":"H_Cm_P",
+			"16":"GI_0_25",
+			"17":"GI_75_100"
 		}
 	},"regressors":{
-		"(0,1)":
+		"(0,17)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.645147991136302,
+						2.69833317623858,
 					"1":
-						2.27828082631236
+						2.20711705019067
 				}
 			},
 		"(0,2)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.709459064486685,
+						2.754406714894439,
 					"1":
-						2.253299794907909
+						2.208998944779121
+				}
+			},
+		"(0,1)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.793858597328736,
+					"1":
+						2.255136191439632
+				}
+			},
+		"(0,16)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.720752422213728,
+					"1":
+						2.318542282147837
 				}
 			}
 	}
