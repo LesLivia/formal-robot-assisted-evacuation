@@ -32,15 +32,11 @@ sensor_data = np.array([int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]),
                         # ,float(sys.argv[8]), float(sys.argv[9])])
 sensor_data = sensor_data.reshape(1, -1)
 
-# TODO: Pickle encoder not working due to incompatible versions
-
 # Estimates the probability of having developed a Group Identity
 manager = GI_Estimator()
-sample_sensor_reading_0 = np.zeros(shape=(1, 30))
-sample_sensor_reading_1 = np.ones(shape=(1, 30))
-sample_sensor_reading = sample_sensor_reading_1 if sys.argv[2] == '1' else sample_sensor_reading_0
 encoded_data = manager.encoder.transform(sensor_data)
 gi_prob = manager.get_shared_identity_probability(encoded_data)
+print(gi_prob)
 
 # Parses Uppaal Stratego verified strategy
 strategy: OptimizedStrategy = parse_strategy()
