@@ -29,25 +29,25 @@ from it.polimi.controllers.utils import process_regressors
 # the model estimating the GI probability
 sensor_data = np.array([int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]),
                         int(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7])])
-                        # ,float(sys.argv[8]), float(sys.argv[9])])
+# ,float(sys.argv[8]), float(sys.argv[9])])
 sensor_data = sensor_data.reshape(1, -1)
 
 # Estimates the probability of having developed a Group Identity
 manager = GI_Estimator()
 encoded_data = manager.encoder.transform(sensor_data)
 gi_prob = manager.get_shared_identity_probability(encoded_data)
-print(gi_prob)
 
 # Parses Uppaal Stratego verified strategy
 strategy: OptimizedStrategy = parse_strategy()
 decisions = process_regressors(strategy.regressors)
 
 # Selects best decision based on strategy and current state
-if gi_prob <= 0.25:
-    print(decisions['GI_0_25'][0])
-elif 0.25 < gi_prob <= 0.5:
-    print(decisions['GI_25_50'][0])
-elif 0.5 < gi_prob <= 0.75:
-    print(decisions['GI_50_75'][0])
+
+calibrated_decisions = dict()
+calibrated_decisions['GI'] = (decisions['GI'][0], decisions['GI'][1] * gi_prob)
+calibrated_decisions['NOT_GI'] = (decisions['NOT_GI'][0], decisions['NOT_GI'][1] * (1 - gi_prob))
+
+if calibrated_decisions['GI'][1] > calibrated_decisions['NOT_GI'][1]:
+    print(calibrated_decisions['GI'][0])
 else:
-    print(decisions['GI_75_100'][0])
+    print(calibrated_decisions['NOT_GI'][0])
