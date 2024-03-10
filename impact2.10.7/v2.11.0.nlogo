@@ -1565,6 +1565,10 @@ to-report request-candidate-help?
     ]
   ]
 
+  ; user-message (word "Params: " simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age)
+  ; user-message (word "Params: " helper-fallen-distance staff-fallen-distance)
+  ; user-message (word "Params: " staff-fallen-distance)
+
   ; Calling the adaptive controller using Python
   let controller-response (shell:exec
     (item 0 CONTROLLER_PYTHON_COMMAND) ; (item 1 CONTROLLER_PYTHON_COMMAND) (item 2 CONTROLLER_PYTHON_COMMAND) (item 3 CONTROLLER_PYTHON_COMMAND) (item 4 CONTROLLER_PYTHON_COMMAND)
@@ -2532,7 +2536,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-1
+0
 1
 -1000
 
@@ -2543,7 +2547,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-1
+0
 1
 -1000
 
