@@ -1,5 +1,6 @@
-import pandas as pd
 from typing import Dict, List
+
+import pandas as pd
 
 from abm_analysis import simulate_and_store, perform_analysis, WORKSPACE_FOLDER
 

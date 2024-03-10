@@ -9,25 +9,30 @@ import multiprocessing
 import time
 import traceback
 from multiprocessing import Pool
-
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import pyNetLogo
 import seaborn as sns
 import statsmodels.api as sm
 from pathlib import Path
 from pyNetLogo import NetLogoException
+import pyNetLogo
 from scipy.stats import mannwhitneyu
 from typing import List, Tuple, Dict, Optional
+import configparser
 
-WORKSPACE_FOLDER = "/home/workspace/"
+config = configparser.ConfigParser()
+config.read('./resources/config.ini')
+config.sections()
+
+WORKSPACE_FOLDER = os.getcwd() + '/'
 
 PLOT_STYLE = 'seaborn-darkgrid'
 
-NETLOGO_PROJECT_DIRECTORY = "/home/src/"  # type:str
+NETLOGO_PROJECT_DIRECTORY = config['NETLOGO']['netlogo.project']  # type:str
 NETLOGO_MODEL_FILE = NETLOGO_PROJECT_DIRECTORY + "v2.11.0.nlogo"  # type:str
-NETLOGO_HOME = "/home/netlogo"  # type:str
+NETLOGO_HOME = config['NETLOGO']['netlogo.home']  # type:str
 RESULTS_CSV_FILE = WORKSPACE_FOLDER + "data/{}_fall_{}_samples_experiment_results.csv"  # type:str
 
 NETLOGO_VERSION = "5"  # type:str
@@ -127,8 +132,7 @@ def initialize(gui):
     global netlogo_link
 
     netlogo_link = pyNetLogo.NetLogoLink(netlogo_home=NETLOGO_HOME,
-                                         netlogo_version=NETLOGO_VERSION,
-                                         gui=gui)  # type: pyNetLogo.NetLogoLink
+                                         gui=gui)
     netlogo_link.load_model(NETLOGO_MODEL_FILE)
 
 
@@ -262,7 +266,7 @@ def simulate_and_store(simulation_scenarios, results_file_name, samples):
 
     updated_simulation_scenarios = {scenario_name: commands
                                     for scenario_name, commands in
-                                    simulation_scenarios.iteritems()}  # type: Dict[str, List[str]]
+                                    simulation_scenarios.items()}  # type: Dict[str, List[str]]
     start_experiments(updated_simulation_scenarios, results_file_name, samples)
 
 

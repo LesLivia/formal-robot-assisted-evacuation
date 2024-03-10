@@ -1,10 +1,11 @@
 import glob
+import os
+from typing import List
 
 import natsort
 from PIL import Image
-from typing import List
 
-WORKSPACE_FOLDER = "/home/workspace/"
+WORKSPACE_FOLDER = os.getcwd() + '/'
 FRAME_FOLDER = WORKSPACE_FOLDER + "frames"  # type:str
 
 

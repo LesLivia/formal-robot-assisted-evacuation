@@ -1589,7 +1589,7 @@ to-report request-candidate-help?
     set result TRUE
   ]
 
-  user-message word "Decision: " controller-response
+  ; user-message word "Decision: " controller-response
 
   report result
 
