@@ -132,6 +132,7 @@ def initialize(gui):
     global netlogo_link
 
     netlogo_link = pyNetLogo.NetLogoLink(netlogo_home=NETLOGO_HOME,
+                                         netlogo_version=NETLOGO_VERSION,
                                          gui=gui)
     netlogo_link.load_model(NETLOGO_MODEL_FILE)
 

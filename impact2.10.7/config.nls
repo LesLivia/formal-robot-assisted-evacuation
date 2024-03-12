@@ -157,7 +157,7 @@ to setup-environment
   ; Change these according to your Anaconda installation.
   ; Use the config below for evacuation time experiments.
   ; set CONTROLLER_PYTHON_COMMAND (list"/home/cgc87/anaconda3/bin/conda" "run" "-n" "wdywfm-adaptive-robot" "python")
-  set CONTROLLER_PYTHON_COMMAND (list"/Library/Frameworks/Python.framework/Versions/3.10/bin/python3")
+  set CONTROLLER_PYTHON_COMMAND (list"/usr/bin/python3")
   ; set CONTROLLER_PYTHON_SCRIPT "/home/cgc87/github/wdywfm-adaptive-robot/abm_runner.py"
   set CONTROLLER_PYTHON_SCRIPT "../stratego_generator/it/polimi/controllers/test_controller.py"
 
