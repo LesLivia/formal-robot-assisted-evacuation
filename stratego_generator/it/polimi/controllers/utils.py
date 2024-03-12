@@ -10,5 +10,18 @@ def process_action(act: str):
     return CHAN_TO_ACT[upp_chan]
 
 
-def process_regressors(regressors: List[Regressor]):
-    return {reg.state.state.locs[1].label: (process_action(reg.best_actions[0]), reg.payoff) for reg in regressors}
+def process_regressors(regressors: List[Regressor], prob_gi: float):
+    calibrated_decisions = dict()
+    for reg in regressors:
+        if reg.state.state.locs[1].label == 'GI':
+            if process_action(reg.best_actions[0]) in calibrated_decisions:
+                calibrated_decisions[process_action(reg.best_actions[0])] += reg.payoff * prob_gi
+            else:
+                calibrated_decisions[process_action(reg.best_actions[0])] = reg.payoff * prob_gi
+        else:
+            if process_action(reg.best_actions[0]) in calibrated_decisions:
+                calibrated_decisions[process_action(reg.best_actions[0])] += reg.payoff * (1 - prob_gi)
+            else:
+                calibrated_decisions[process_action(reg.best_actions[0])] = reg.payoff * (1 - prob_gi)
+
+    return calibrated_decisions

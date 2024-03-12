@@ -39,15 +39,11 @@ gi_prob = manager.get_shared_identity_probability(encoded_data)
 
 # Parses Uppaal Stratego verified strategy
 strategy: OptimizedStrategy = parse_strategy()
-decisions = process_regressors(strategy.regressors)
+decisions = process_regressors(strategy.regressors, gi_prob)
 
 # Selects best decision based on strategy and current state
 
-calibrated_decisions = dict()
-calibrated_decisions['GI'] = (decisions['GI'][0], decisions['GI'][1] * gi_prob)
-calibrated_decisions['NOT_GI'] = (decisions['NOT_GI'][0], decisions['NOT_GI'][1] * (1 - gi_prob))
-
-if calibrated_decisions['GI'][1] > calibrated_decisions['NOT_GI'][1]:
-    print(calibrated_decisions['GI'][0])
+if decisions['call-staff'] > decisions['do-help']:
+    print('call-staff')
 else:
-    print(calibrated_decisions['NOT_GI'][0])
+    print('do-help')
