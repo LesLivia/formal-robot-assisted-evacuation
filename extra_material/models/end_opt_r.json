@@ -7,13 +7,7 @@
 		"s.location"
 	],"pointvars":[
 		"#t(0)",
-		"#time",
-		"s.P_G",
-		"s.P_P",
-		"s.N_p",
-		"s.N_m",
-		"s.C_p",
-		"s.C_m"
+		"#time"
 	],"locationnames":{
 		"r.location":{
 			"0":"__init__",
@@ -21,39 +15,31 @@
 		},
 		"s.location":{
 			"0":"__init__",
-			"1":"H_G",
-			"2":"H_P",
+			"1":"GI",
+			"2":"NOT_GI",
 			"3":"R_N_G",
 			"4":"R_C_G",
 			"5":"R_N_P",
 			"6":"R_C_P",
-			"7":"__end__",
-			"8":"H_Np_G",
-			"9":"H_Nm_G",
-			"10":"H_Cp_G",
-			"11":"H_Cm_G",
-			"12":"H_Np_P",
-			"13":"H_Nm_P",
-			"14":"H_Cp_P",
-			"15":"H_Cm_P"
+			"7":"__end__"
 		}
 	},"regressors":{
 		"(0,1)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.645147991136302,
+						2.649619865059615,
 					"1":
-						2.27828082631236
+						2.441718740361763
 				}
 			},
 		"(0,2)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.709459064486685,
+						2.649211353884008,
 					"1":
-						2.253299794907909
+						2.463524210511175
 				}
 			}
 	}
