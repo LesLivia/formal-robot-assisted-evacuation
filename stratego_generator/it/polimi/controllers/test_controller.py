@@ -2,8 +2,6 @@ import configparser
 import os
 import sys
 
-import numpy as np
-
 curr_path = os.getcwd()
 SUBMODULE_PATHS = ['submodules/gi_estimator', 'submodules/StrategyViz', '']
 
@@ -31,33 +29,19 @@ for sub in SUBMODULE_PATHS:
     # necessary to access 'controller' in NetLogo
     sys.path.extend([sub_path])
 
-# necessary to suppress tensorflow logs
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-from controller import GI_Estimator
 from src.strategyviz.strategy2pta.opt_strategy import OptimizedStrategy
 from it.polimi.mgrs.strategy_mgr import parse_strategy
 from it.polimi.controllers.utils import process_regressors
 
-# Processes the current state of the scenario into input parameters for
-# the model estimating the GI probability
-sensor_data = np.array([int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]),
-                        int(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7])])
-# ,float(sys.argv[8]), float(sys.argv[9])])
-sensor_data = sensor_data.reshape(1, -1)
-
-# Estimates the probability of having developed a Group Identity
-manager = GI_Estimator()
-encoded_data = manager.encoder.transform(sensor_data)
-gi_prob = manager.get_shared_identity_probability(encoded_data)
+gi_prob = 0.12
 
 # Parses Uppaal Stratego verified strategy
 strategy: OptimizedStrategy = parse_strategy()
-decisions = process_regressors(strategy.regressors, gi_prob)
+decisions = process_regressors(strategy.regressors, gi_prob, float(sys.argv[8]), float(sys.argv[9]))
 
 # Logs inputs and outputs
 if LOGGING:
-    new_line = "\n{},{},{},{},{},{},{},{},{},{:.4f}".format(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]),
+    new_line = "\n{},{},{},{},{},{},{},{},{},{:.4f}".format(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]),
                                                             int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
                                                             int(sys.argv[7]), float(sys.argv[8]), float(sys.argv[9]),
                                                             gi_prob)
