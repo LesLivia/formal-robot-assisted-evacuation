@@ -14,8 +14,8 @@ def process_regressors(regressors: List[Regressor], prob_gi: float, fallen_dist:
     calibrated_decisions = dict()
 
     D_TH = 5
-    f_label = 'fu{}'.format(D_TH) if fallen_dist <= D_TH else 'fo{}'.format(D_TH)
-    s_label = 'su{}'.format(D_TH) if staff_dist <= D_TH else 'so{}'.format(D_TH)
+    f_label = 'fu' if fallen_dist <= D_TH else 'fo'
+    s_label = 'su' if staff_dist <= D_TH else 'so'
 
     gi_label = 'GI_{}_{}'.format(f_label, s_label)
     ngi_label = 'N' + gi_label
