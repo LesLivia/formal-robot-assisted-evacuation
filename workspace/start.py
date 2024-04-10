@@ -1,3 +1,4 @@
+import sys
 from typing import Dict, List
 
 import pandas as pd
@@ -14,21 +15,21 @@ SET_PASSENGER_SUPPORT_COMMAND = "set REQUEST_BYSTANDER_SUPPORT {}"  # type: str
 def main():
     simulation_scenarios = {
         "no-support": [SET_FRAME_GENERATION_COMMAND.format("FALSE"),
-                       SET_FALL_LENGTH_COMMAND.format(500)],
+                       SET_FALL_LENGTH_COMMAND.format(int(sys.argv[2]))],
         "staff-support": [SET_FRAME_GENERATION_COMMAND.format("FALSE"),
-                          SET_FALL_LENGTH_COMMAND.format(500),
+                          SET_FALL_LENGTH_COMMAND.format(int(sys.argv[2])),
                           SET_STAFF_SUPPORT_COMMAND.format("TRUE")],
         "passenger-support": [SET_FRAME_GENERATION_COMMAND.format("FALSE"),
-                              SET_FALL_LENGTH_COMMAND.format(500),
+                              SET_FALL_LENGTH_COMMAND.format(int(sys.argv[2])),
                               SET_PASSENGER_SUPPORT_COMMAND.format("TRUE")],
-        "adaptive-support": [SET_FRAME_GENERATION_COMMAND.format("FALSE"),
-                             SET_FALL_LENGTH_COMMAND.format(500),
+        "adaptive-support": [SET_FRAME_GENERATION_COMMAND.format("TRUE"),
+                             SET_FALL_LENGTH_COMMAND.format(int(sys.argv[2])),
                              SET_PASSENGER_SUPPORT_COMMAND.format("TRUE"),
                              SET_STAFF_SUPPORT_COMMAND.format("TRUE")]
     }  # type: Dict[str, List[str]]
 
     results_file_name = WORKSPACE_FOLDER + "data/experiments.csv"  # type:str
-    samples = 30  # type: int
+    samples = int(sys.argv[1])  # type: int
 
     simulate_and_store(simulation_scenarios, results_file_name, samples)
     metrics = pd.DataFrame(

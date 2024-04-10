@@ -144,6 +144,7 @@ globals [; GLOBALS
          ENABLE_FRAME_GENERATION
          CONTROLLER_PYTHON_COMMAND
          CONTROLLER_PYTHON_SCRIPT
+         CONTROLLER_LOG_COMMAND
          L_STEEPNESS L_THRESHOLD AL_STEEPNESS AL_THRESHOLD ETA_MENTAL ETA_BODY CROWD_CONGESTION_THRESHOLD WALL_COLOR
 
 
@@ -1569,11 +1570,12 @@ to-report request-candidate-help?
   ; user-message (word "Params: " helper-fallen-distance staff-fallen-distance)
   ; user-message (word "Params: " staff-fallen-distance)
 
+
+
   ; Calling the adaptive controller using Python
-  let controller-response (shell:exec
-    (item 0 CONTROLLER_PYTHON_COMMAND) ; (item 1 CONTROLLER_PYTHON_COMMAND) (item 2 CONTROLLER_PYTHON_COMMAND) (item 3 CONTROLLER_PYTHON_COMMAND) (item 4 CONTROLLER_PYTHON_COMMAND)
-    CONTROLLER_PYTHON_SCRIPT simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age helper-fallen-distance staff-fallen-distance
-  )
+  let controller-response (shell:exec (item 0 CONTROLLER_PYTHON_COMMAND)
+    CONTROLLER_PYTHON_SCRIPT simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture
+    fallen-age helper-fallen-distance staff-fallen-distance)
 
   log-turtle "staff-fallen-distance " staff-fallen-distance
   log-turtle "helper-fallen-distance " helper-fallen-distance
@@ -1589,7 +1591,11 @@ to-report request-candidate-help?
     set result TRUE
   ]
 
-  ; user-message word "Decision: " controller-response
+  file-open "out.txt"
+  file-print controller-response
+  file-close
+
+  user-message word "Decision: " controller-response
 
   report result
 
@@ -2536,7 +2542,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-0
+1
 1
 -1000
 
@@ -2547,7 +2553,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-0
+1
 1
 -1000
 

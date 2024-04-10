@@ -7,7 +7,8 @@
 		"s.location"
 	],"pointvars":[
 		"#t(0)",
-		"#time"
+		"#time",
+		"s.r"
 	],"locationnames":{
 		"r.location":{
 			"0":"__init__",
@@ -24,22 +25,22 @@
 			"7":"__end__"
 		}
 	},"regressors":{
-		"(0,1)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.649619865059615,
-					"1":
-						2.441718740361763
-				}
-			},
 		"(0,2)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.649211353884008,
+						2.6,
 					"1":
-						2.463524210511175
+						2.2
+				}
+			},
+		"(0,1)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.8,
+					"1":
+						3
 				}
 			}
 	}

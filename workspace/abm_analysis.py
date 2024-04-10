@@ -1,7 +1,5 @@
 import matplotlib
 
-from abm_video_generation import generate_video
-
 matplotlib.use('Agg')
 
 import math
@@ -116,7 +114,7 @@ def run_simulation(simulation_id, post_setup_commands):
             metrics_dataframe.to_csv("data/nan_df.csv")
             print("DEBUG!!! info to data/nan_df.csv")
 
-        generate_video(simulation_id=simulation_id)
+        # generate_video(simulation_id=simulation_id)
         return evacuation_time
     except NetLogoException:
         traceback.print_exc()
@@ -146,7 +144,9 @@ def start_experiments(experiment_configurations, results_file, samples):
     for experiment_name, experiment_commands in experiment_configurations.items():
         scenario_times = run_parallel_simulations(experiment_name, samples,
                                                   post_setup_commands=experiment_commands)  # type:List[float]
+        print(scenario_times)
         experiment_data[experiment_name] = scenario_times
+        print(experiment_data[experiment_name])
 
     end_time = time.time()  # type: float
     print("Simulation finished after {} seconds".format(end_time - start_time))
@@ -180,7 +180,7 @@ def run_parallel_simulations(experiment_name, samples, post_setup_commands, gui=
             results.append(simulation_output)
 
     executor.close()
-    executor.join()
+    # executor.join()
 
     return results
 
@@ -289,7 +289,7 @@ def get_current_file_metrics(simulation_scenarios, current_file):
 def perform_analysis(target_scenario, simulation_scenarios, current_file):
     # type: (str, Dict[str, List[str]], str) -> Dict[str, float]
 
-    plt.style.use(PLOT_STYLE)
+    # plt.style.use(PLOT_STYLE)
     plot_results(csv_file=current_file)
     current_file_metrics = get_current_file_metrics(simulation_scenarios, current_file)  # type: Dict[str, float]
     # current_file_metrics["fall_length"] = fall_length
