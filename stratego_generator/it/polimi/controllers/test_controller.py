@@ -33,7 +33,7 @@ from src.strategyviz.strategy2pta.opt_strategy import OptimizedStrategy
 from it.polimi.mgrs.strategy_mgr import parse_strategy
 from it.polimi.controllers.utils import process_regressors
 
-gi_prob = 0.12
+gi_prob = float(config['STRATEGY SETTINGS']['GI_PROB'])
 
 # Parses Uppaal Stratego verified strategy
 strategy: OptimizedStrategy = parse_strategy()
@@ -49,7 +49,7 @@ if LOGGING:
         log_file.write(new_line)
 
 # Selects best decision based on strategy and current state
-if decisions['call-staff'] > decisions['do-help']:
+if decisions.get('call-staff', 0) >= decisions.get('do-help', 0):
     print('call-staff')
 else:
     print('ask-help')
