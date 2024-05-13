@@ -1,5 +1,5 @@
 to setup-seed
-set starting-seed 68031726
+  set starting-seed ??
 end
 
 to setup-model

@@ -139,6 +139,7 @@ globals [; GLOBALS
          ROBOT_REQUEST_BONUS
          REQUEST_STAFF_SUPPORT
          REQUEST_BYSTANDER_SUPPORT
+         starting-seed
          ENABLE_LOGGING
          ENABLE_DATA_COLLECTION
          ENABLE_FRAME_GENERATION
@@ -263,7 +264,8 @@ agents-own [
 ;-----------------------------------------
 to setup
   clear-all
-  ;random-seed
+  setup-seed
+  random-seed starting-seed
 
   set list_exits []
   set request-for-help-results (list (list "helper_gender" "helper_culture" "helper_age" "fallen_gender" "fallen_culture" "fallen_age" "offer-help"))
@@ -272,7 +274,7 @@ to setup
   set start_fire_alarm 0
   set place_fire_tick  0
 
-  set cultural_cluster    [ "Arab" "Near East" "Latin Amerca" "East Europe" "Latin Europe" "Nordic" "Germanic" "African" "Anglo" "Confucian" "Far East"] ;nw
+  set cultural_cluster    [ "Arab" "Near East" "Latin America" "East Europe" "Latin Europe" "Nordic" "Germanic" "African" "Anglo" "Confucian" "Far East"] ;nw
   set english_proficiency [0.140 0.211 0.0751 0.1628 0.3605 0.8601 0.6951 0.4826 0.9539 0.0156 0.1827] ;nw
 
   ; STATISTICS
@@ -1214,10 +1216,7 @@ to move-staff  ; staff behavior ;nw
 end
 
 to-report seed-simulation
-  let current-seed new-seed
-  random-seed current-seed
-
-  report current-seed
+  report starting-seed
 end
 
 to log-turtle [prefix turtle-to-log]

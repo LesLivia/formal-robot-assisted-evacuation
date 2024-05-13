@@ -3,10 +3,8 @@ import matplotlib
 matplotlib.use('Agg')
 
 import math
-import multiprocessing
 import time
 import traceback
-from multiprocessing import Pool
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,7 +15,7 @@ from pathlib import Path
 from pyNetLogo import NetLogoException
 import pyNetLogo
 from scipy.stats import mannwhitneyu
-from typing import List, Tuple, Dict, Optional
+from typing import List, Dict
 import configparser
 
 config = configparser.ConfigParser()
@@ -30,6 +28,7 @@ PLOT_STYLE = 'seaborn-darkgrid'
 
 NETLOGO_PROJECT_DIRECTORY = config['NETLOGO']['netlogo.project']  # type:str
 NETLOGO_MODEL_FILE = NETLOGO_PROJECT_DIRECTORY + "v2.11.0.nlogo"  # type:str
+NETLOGO_CONFIG_FILE = NETLOGO_PROJECT_DIRECTORY + "config.nls"
 NETLOGO_HOME = config['NETLOGO']['netlogo.home']  # type:str
 RESULTS_CSV_FILE = WORKSPACE_FOLDER + "data/{}_fall_{}_samples_experiment_results.csv"  # type:str
 
@@ -39,6 +38,8 @@ TURTLE_PRESENT_REPORTER = "count turtles"  # type:str
 EVACUATED_REPORTER = "number_passengers - count agents + 1"  # type:str
 DEAD_REPORTER = "count agents with [ st_dead = 1 ]"  # type:str
 SEED_SIMULATION_REPORTER = "seed-simulation"
+FALL_LENGTH_REPORTER = "fall-length-simulation"
+SET_STARTING_SEED_COMMAND = "set starting-seed {}"
 SET_SIMULATION_ID_COMMAND = 'set SIMULATION_ID "{}"'  # type:str
 
 # SET_STAFF_SUPPORT_COMMAND = "set REQUEST_STAFF_SUPPORT {}"  # type: str
@@ -59,7 +60,6 @@ SET_SIMULATION_ID_COMMAND = 'set SIMULATION_ID "{}"'  # type:str
 #                         ADAPTIVE_SUPPORT_COLUMN: [ENABLE_PASSENGER_COMMAND,
 #                                                   ENABLE_STAFF_COMMAND]}  # type: Dict[str, List[str]]
 
-# SAMPLES = 100  # type:int
 MAX_NETLOGO_TICKS = 2000  # type: int
 
 
@@ -87,12 +87,37 @@ def calculate_sample_size(mean_1, mean_2, std_dev_1, std_dev_2, alpha=0.05, powe
     return result
 
 
-def run_simulation(simulation_id, post_setup_commands):
-    # type: (str, List[str]) -> Optional[float]
+def start_experiments(experiment_configurations, results_file, samples, random_seeds):
+    start_time = time.time()  # type: float
+
+    experiment_data = {}  # type: Dict[str, List[float]]
+    experiment_data['random_seed'] = random_seeds
+    for experiment_name, experiment_commands in experiment_configurations.items():
+        scenario_times = run_simulations(experiment_name, samples,
+                                         post_setup_commands=experiment_commands,
+                                         random_seeds=random_seeds)  # type:List[float]
+        experiment_data[experiment_name] = scenario_times
+
+    end_time = time.time()  # type: float
+    print("Simulation finished after {} seconds".format(end_time - start_time))
+
+    experiment_results = pd.DataFrame(experiment_data)  # type:pd.DataFrame
+    experiment_results.to_csv(results_file)
+
+    print("Data written to {}".format(results_file))
+
+
+def run_simulation(netlogo_link, simulation_id, post_setup_commands, random_seed):
     try:
-        current_seed = netlogo_link.report(SEED_SIMULATION_REPORTER)  # type:str
         netlogo_link.command("setup")
+
+        starting_seed_cmd = SET_STARTING_SEED_COMMAND.format(random_seed)
+        netlogo_link.command(starting_seed_cmd)
+
         netlogo_link.command(SET_SIMULATION_ID_COMMAND.format(simulation_id))
+
+        current_seed = netlogo_link.report(SEED_SIMULATION_REPORTER)  # type:str
+        print("id:{} seed:{} {} executed".format(simulation_id, current_seed, starting_seed_cmd))
 
         if len(post_setup_commands) > 0:
             for post_setup_command in post_setup_commands:
@@ -125,62 +150,40 @@ def run_simulation(simulation_id, post_setup_commands):
     return None
 
 
-def initialize(gui):
-    # type: (bool) -> None
-    global netlogo_link
-
+def initialize(gui, random_seed):
     netlogo_link = pyNetLogo.NetLogoLink(netlogo_home=NETLOGO_HOME,
                                          netlogo_version=NETLOGO_VERSION,
                                          gui=gui)
+
+    with open('./resources/netlogo_config_tplt.txt') as config_tplt:
+        lines = config_tplt.readlines()
+        for i, line in enumerate(lines):
+            if 'starting-seed' in line:
+                lines[i] = SET_STARTING_SEED_COMMAND.format(random_seed) + '\n'
+                break
+
+    with open(NETLOGO_CONFIG_FILE, "w") as config_file:
+        config_file.writelines(lines)
+
     netlogo_link.load_model(NETLOGO_MODEL_FILE)
+    return netlogo_link
 
 
-def start_experiments(experiment_configurations, results_file, samples):
-    # type: (Dict[str, List[str]], str, int) -> None
-
-    start_time = time.time()  # type: float
-
-    experiment_data = {}  # type: Dict[str, List[float]]
-    for experiment_name, experiment_commands in experiment_configurations.items():
-        scenario_times = run_parallel_simulations(experiment_name, samples,
-                                                  post_setup_commands=experiment_commands)  # type:List[float]
-        print(scenario_times)
-        experiment_data[experiment_name] = scenario_times
-        print(experiment_data[experiment_name])
-
-    end_time = time.time()  # type: float
-    print("Simulation finished after {} seconds".format(end_time - start_time))
-
-    experiment_results = pd.DataFrame(experiment_data)  # type:pd.DataFrame
-    experiment_results.to_csv(results_file)
-
-    print("Data written to {}".format(results_file))
-
-
-def run_simulation_with_dict(dict_parameters):
-    # type: (Dict) -> float
-    return run_simulation(**dict_parameters)
-
-
-def run_parallel_simulations(experiment_name, samples, post_setup_commands, gui=False):
-    # type: (str, int, List[str], bool) -> List[float]
-
-    initialise_arguments = (gui,)  # type: Tuple
+def run_simulations(experiment_name, samples, post_setup_commands, gui=False, random_seeds=None):
     simulation_parameters = [{"simulation_id": "{}_{}".format(experiment_name, simulation_index),
-                              "post_setup_commands": post_setup_commands}
-                             for simulation_index in range(samples)]  # type: List[Dict]
+                              "post_setup_commands": post_setup_commands,
+                              "random_seed": random_seeds[simulation_index]}
+                             for simulation_index in range(samples)]
 
     results = []  # type: List[float]
-    executor = Pool(initializer=initialize,
-                    initargs=initialise_arguments)  # type: multiprocessing.pool.Pool
-
-    for simulation_output in executor.map(func=run_simulation_with_dict,
-                                          iterable=simulation_parameters):
+    for exp, params in enumerate(simulation_parameters):
+        link = initialize(gui, params['random_seed'])
+        simulation_output = run_simulation(link, params['simulation_id'], params['post_setup_commands'],
+                                           params['random_seed'])
         if simulation_output:
             results.append(simulation_output)
 
-    executor.close()
-    # executor.join()
+        link.kill_workspace()
 
     return results
 
@@ -197,6 +200,7 @@ def plot_results(csv_file, samples_in_title=False):
     # type: (str, bool) -> None
     file_description = Path(csv_file).stem  # type: str
     results_dataframe = get_dataframe(csv_file)  # type: pd.DataFrame
+    results_dataframe = results_dataframe.loc[:, results_dataframe.columns != 'random_seed']
     # results_dataframe = results_dataframe.rename(columns={
     #     NO_SUPPORT_COLUMN: "No Support",
     #     ONLY_STAFF_SUPPORT_COLUMN: "Proself-Oriented",
@@ -262,19 +266,16 @@ def test_hypothesis(first_scenario_column, second_scenario_column, csv_file, alt
         print(alternative_hypothesis)
 
 
-def simulate_and_store(simulation_scenarios, results_file_name, samples):
-    # type: (Dict[str, List[str]],str, int) -> None
-
+def simulate_and_store(simulation_scenarios, results_file_name, samples, random_seeds):
     updated_simulation_scenarios = {scenario_name: commands
                                     for scenario_name, commands in
                                     simulation_scenarios.items()}  # type: Dict[str, List[str]]
-    start_experiments(updated_simulation_scenarios, results_file_name, samples)
+    start_experiments(updated_simulation_scenarios, results_file_name, samples, random_seeds)
 
 
 def get_current_file_metrics(simulation_scenarios, current_file):
-    # type: (Dict[str, List[str]], str) -> Dict[str, float]
-    results_dataframe = get_dataframe(current_file)  # type: pd.DataFrame
-    metrics_dict = {}  # type: Dict[str, float]
+    results_dataframe = get_dataframe(current_file)
+    metrics_dict = {}
 
     for scenario in simulation_scenarios.keys():
         metrics_dict["{}_mean".format(scenario)] = results_dataframe[scenario].mean()
@@ -287,12 +288,8 @@ def get_current_file_metrics(simulation_scenarios, current_file):
 
 
 def perform_analysis(target_scenario, simulation_scenarios, current_file):
-    # type: (str, Dict[str, List[str]], str) -> Dict[str, float]
-
-    # plt.style.use(PLOT_STYLE)
     plot_results(csv_file=current_file)
-    current_file_metrics = get_current_file_metrics(simulation_scenarios, current_file)  # type: Dict[str, float]
-    # current_file_metrics["fall_length"] = fall_length
+    current_file_metrics = get_current_file_metrics(simulation_scenarios, current_file)
 
     for alternative_scenario in simulation_scenarios.keys():
         if alternative_scenario != target_scenario:

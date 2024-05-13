@@ -1,15 +1,18 @@
 import sys
-from typing import Dict, List
+from random import randint
 
 import pandas as pd
 
 from abm_analysis import simulate_and_store, perform_analysis, WORKSPACE_FOLDER
 
-SET_FRAME_GENERATION_COMMAND = "set ENABLE_FRAME_GENERATION {}"  # type: str
-SET_FALL_LENGTH_COMMAND = "set DEFAULT_FALL_LENGTH {}"  # type: str
+MIN_SEED = -2147483648
+MAX_SEED = 2147483647
 
-SET_STAFF_SUPPORT_COMMAND = "set REQUEST_STAFF_SUPPORT {}"  # type: str
-SET_PASSENGER_SUPPORT_COMMAND = "set REQUEST_BYSTANDER_SUPPORT {}"  # type: str
+SET_FRAME_GENERATION_COMMAND = "set ENABLE_FRAME_GENERATION {}"
+SET_FALL_LENGTH_COMMAND = "set DEFAULT_FALL_LENGTH {}"
+
+SET_STAFF_SUPPORT_COMMAND = "set REQUEST_STAFF_SUPPORT {}"
+SET_PASSENGER_SUPPORT_COMMAND = "set REQUEST_BYSTANDER_SUPPORT {}"
 
 
 def main():
@@ -26,14 +29,14 @@ def main():
                              SET_FALL_LENGTH_COMMAND.format(int(sys.argv[2])),
                              SET_PASSENGER_SUPPORT_COMMAND.format("TRUE"),
                              SET_STAFF_SUPPORT_COMMAND.format("TRUE")]
-    }  # type: Dict[str, List[str]]
+    }
 
-    results_file_name = WORKSPACE_FOLDER + "data/experiments.csv"  # type:str
-    samples = int(sys.argv[1])  # type: int
+    results_file_name = WORKSPACE_FOLDER + "data/experiments.csv"
+    samples = int(sys.argv[1])
+    random_seeds = [randint(MIN_SEED, MAX_SEED) for i in range(samples)]
 
-    simulate_and_store(simulation_scenarios, results_file_name, samples)
-    metrics = pd.DataFrame(
-        [perform_analysis("adaptive-support", simulation_scenarios, results_file_name)])  # type: pd.DataFrame
+    simulate_and_store(simulation_scenarios, results_file_name, samples, random_seeds)
+    metrics = pd.DataFrame([perform_analysis("adaptive-support", simulation_scenarios, results_file_name)])
     metrics.to_csv(WORKSPACE_FOLDER + "data/metrics.csv")
 
 
