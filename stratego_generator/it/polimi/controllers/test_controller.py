@@ -1,5 +1,6 @@
 import configparser
 import os
+import random
 import sys
 
 curr_path = os.getcwd()
@@ -33,7 +34,14 @@ from src.strategyviz.strategy2pta.opt_strategy import OptimizedStrategy
 from it.polimi.mgrs.strategy_mgr import parse_strategy
 from it.polimi.controllers.utils import process_regressors
 
-gi_prob = float(config['STRATEGY SETTINGS']['GI_PROB'])
+gi_prob_distr = config['STRATEGY SETTINGS']['GI_PROB_DISTR'].lower()
+
+if gi_prob_distr == 'uniform':
+    gi_prob_min = float(config['STRATEGY SETTINGS']['GI_PROB_MIN'])
+    gi_prob_max = float(config['STRATEGY SETTINGS']['GI_PROB_MAX'])
+    gi_prob = random.uniform(gi_prob_min, gi_prob_max)
+else:
+    gi_prob = float(config['STRATEGY SETTINGS']['GI_PROB'])
 
 # Parses Uppaal Stratego verified strategy
 strategy: OptimizedStrategy = parse_strategy()

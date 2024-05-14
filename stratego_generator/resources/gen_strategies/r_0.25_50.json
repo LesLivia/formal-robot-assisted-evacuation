@@ -37,76 +37,76 @@
 			"19":"moving3"
 		}
 	},"regressors":{
-		"(0,15)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.6,
-					"1":
-						2.2
-				}
-			},
-		"(0,8)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.6,
-					"1":
-						2.277916289823605
-				}
-			},
-		"(0,14)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.6,
-					"1":
-						2.947314542313181
-				}
-			},
 		"(0,13)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.675396604450313,
+						2.670517705634304,
 					"1":
-						2.2
-				}
-			},
-		"(0,6)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.694251670606358,
-					"1":
-						2.285735270536122
-				}
-			},
-		"(0,7)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.747675428390967,
-					"1":
-						2.2
+						2.731106933789452
 				}
 			},
 		"(0,9)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.6,
+						2.674302439900126,
 					"1":
-						2.2
+						2.562139917695474
+				}
+			},
+		"(0,14)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.659259259259259,
+					"1":
+						2.369332813990641
+				}
+			},
+		"(0,15)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.77037037037037,
+					"1":
+						2.785050331708192
 				}
 			},
 		"(0,12)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.708955528207193,
+						2.71275720164609,
 					"1":
-						2.99282717258804
+						2.759142407153381
+				}
+			},
+		"(0,8)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.650297210791038,
+					"1":
+						2.239018442310623
+				}
+			},
+		"(0,6)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.666666666666667,
+					"1":
+						2.270016427035174
+				}
+			},
+		"(0,7)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.669135802469136,
+					"1":
+						2.726328758002265
 				}
 			}
 	}

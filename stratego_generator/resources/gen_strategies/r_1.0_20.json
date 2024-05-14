@@ -21,23 +21,23 @@
 			"3":"R_N_P",
 			"4":"R_C_P",
 			"5":"__end__",
-			"6":"GI_fu5_su5",
-			"7":"GI_fo5_su5",
-			"8":"GI_fu5_so5",
-			"9":"GI_fo5_so5",
+			"6":"GI_fu_su",
+			"7":"GI_fo_su",
+			"8":"GI_fu_so",
+			"9":"GI_fo_so",
 			"10":"GI",
 			"11":"NOT_GI",
-			"12":"NGI_fu5_su5",
-			"13":"NGI_fo5_su5",
-			"14":"NGI_fu5_so5",
-			"15":"NGI_fo5_so5",
+			"12":"NGI_fu_su",
+			"13":"NGI_fo_su",
+			"14":"NGI_fu_so",
+			"15":"NGI_fo_so",
 			"16":"moving1",
 			"17":"moving2",
 			"18":"moving4",
 			"19":"moving3"
 		}
 	},"regressors":{
-		"(0,13)":
+		"(0,15)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
@@ -46,7 +46,14 @@
 						2.2
 				}
 			},
-		"(0,15)":
+		"(0,8)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"1":
+						3
+				}
+			},
+		"(0,12)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
@@ -64,7 +71,16 @@
 						2.2
 				}
 			},
-		"(0,8)":
+		"(0,13)":
+			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
+				{
+					"0":
+						2.6,
+					"1":
+						2.2
+				}
+			},
+		"(0,6)":
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
@@ -77,36 +93,7 @@
 			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
 				{
 					"0":
-						2.8,
-					"1":
-						3
-				}
-			},
-		"(0,6)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.8,
-					"1":
-						3
-				}
-			},
-		"(0,9)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.8,
-					"1":
-						3
-				}
-			},
-		"(0,12)":
-			{"type":"act->point->val","representation":"simpletree","minimize":0,"regressor":
-				{
-					"0":
-						2.6,
-					"1":
-						2.2
+						2.8
 				}
 			}
 	}

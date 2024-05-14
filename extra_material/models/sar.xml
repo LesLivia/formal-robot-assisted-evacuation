@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>broadcast chan tick;
+
+// BEHAVIOR
+
+const int N_DIST = 2;
+
+// LAYOUT
+
+const int L_X = 5, L_Y = 5;
+
+const int E = -1;
+
+int D_GRID[L_X][L_Y] = {{E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}};
+int H_GRID[L_X][L_Y] = {{E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}};
+int FR_GRID[L_X][L_Y] = {{E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}, {E, E, E, E, E}};
+
+clock evac_time;
+
+const int N_E = 2;
+
+int EXITS[N_E][2] = {{2, 0}, {2, 4}};
+
+int dist(int x1, int y1, int x2, int y2) {
+    return abs(x1-x2) + abs(y1-y2);
+} 
+
+
+
+</declaration>
+	<template>
+		<name>Ticker</name>
+		<declaration>clock x;</declaration>
+		<location id="id0" x="0" y="0">
+			<label kind="invariant" x="-10" y="17">x&lt;=1</label>
+		</location>
+		<init ref="id0"/>
+		<transition id="id1">
+			<source ref="id0"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-41" y="-119">x&gt;=1</label>
+			<label kind="synchronisation" x="-41" y="-102">tick!</label>
+			<label kind="assignment" x="-41" y="-85">x=0</label>
+			<nail x="-59" y="-85"/>
+			<nail x="51" y="-85"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">Drone</name>
+		<parameter>int id, int init_pos</parameter>
+		<declaration>int pos;
+
+void initialize() {
+    D_GRID[fint(init_pos/L_X)][init_pos % L_Y] = id;
+}</declaration>
+		<location id="id2" x="-824" y="-17">
+			<name x="-834" y="-51">__init__</name>
+			<committed/>
+		</location>
+		<location id="id3" x="-629" y="-17">
+		</location>
+		<init ref="id2"/>
+		<transition id="id4">
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="assignment" x="-782" y="-17">initialize()</label>
+		</transition>
+	</template>
+	<template>
+		<name>Human</name>
+		<parameter>int id, int init_pos</parameter>
+		<declaration>bool is_safe = false;
+int pos;
+
+void initialize() {
+    H_GRID[fint(init_pos/L_X)][init_pos % L_Y] = id;
+}
+
+void check() {
+    int curr_x = fint(init_pos/L_X), curr_y = init_pos % L_Y;
+    int i = 0, closest_exit = -1, min_dist = L_X*L_Y, dist_e = L_X*L_Y;
+    int choice, next;
+    for (i=0; i&lt;N_E; i++) {
+        dist_e = dist(curr_x, curr_y, EXITS[i][0], EXITS[i][1]);
+        if (dist_e&lt;min_dist) {
+            min_dist = dist_e;
+            closest_exit = i;
+        }   
+    }
+    is_safe = min_dist&lt;=1;
+
+    if (!is_safe) {
+        choice = fint(random(4));
+        if (choice==1) pos -= 1;
+    }
+}</declaration>
+		<location id="id5" x="-450" y="-17">
+			<name x="-476" y="-51">__init__</name>
+			<committed/>
+		</location>
+		<location id="id6" x="-229" y="-17">
+			<name x="-239" y="-51">escaping</name>
+		</location>
+		<location id="id7" x="-25" y="-17">
+			<name x="-35" y="-51">safe</name>
+		</location>
+		<location id="id8" x="-229" y="68">
+			<committed/>
+		</location>
+		<init ref="id5"/>
+		<transition id="id9">
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-136" y="25">is_safe</label>
+		</transition>
+		<transition id="id10">
+			<source ref="id8"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-340" y="17">!is_safe</label>
+			<nail x="-272" y="25"/>
+		</transition>
+		<transition id="id11">
+			<source ref="id6"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-229" y="8">tick?</label>
+			<label kind="assignment" x="-229" y="25">check()</label>
+		</transition>
+		<transition id="id12">
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="-398" y="-17">initialize()</label>
+		</transition>
+	</template>
+	<template>
+		<name>FirstResponder</name>
+		<parameter>int id, int init_pos</parameter>
+		<declaration>int pos;
+
+void initialize() {
+    FR_GRID[fint(init_pos/L_X)][init_pos % L_Y] = id;
+}</declaration>
+		<location id="id13" x="-892" y="-68">
+			<name x="-902" y="-102">__init__</name>
+			<committed/>
+		</location>
+		<location id="id14" x="-671" y="-68">
+		</location>
+		<init ref="id13"/>
+		<transition id="id15">
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="assignment" x="-833" y="-68">initialize()</label>
+		</transition>
+	</template>
+	<system>t = Ticker();
+
+d1 = Drone(0, 11);
+h1 = Human(0, 11);
+h2 = Human(1, 7);
+h3 = Human(2, 1);
+h4 = Human(3, 20);
+f1 = FirstResponder(0, 7);
+
+system 
+t,
+d1, 
+h1,h2,h3,h4, 
+f1;
+</system>
+	<queries>
+		<query>
+			<formula>A&lt;&gt; (h1.safe &amp;&amp; h2.safe &amp;&amp; h3.safe &amp;&amp; h4.safe)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E&lt;&gt; (h1.safe &amp;&amp; h2.safe &amp;&amp; h3.safe &amp;&amp; h4.safe)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>simulate[&lt;=10]{h1.is_safe*10, h2.is_safe*10, h3.is_safe*10, h4.is_safe*10}</formula>
+			<comment/>
+			<result outcome="success" type="quality" timestamp="2024-04-02 13:21:35 +0200">
+				<plot title="Simulations (1)" xaxis="time" yaxis="value">
+					<series title="h1.is_safe * 10" type="l" color="0xff0000" encoding="csv">0.0,0.0
+1.0,0.0
+1.0,10.0
+10.000002,10.0
+					</series>
+					<series title="h2.is_safe * 10" type="l" color="0x80ff00" encoding="csv">0.0,0.0
+10.000002,0.0
+					</series>
+					<series title="h3.is_safe * 10" type="l" color="0x00ffff" encoding="csv">0.0,0.0
+10.000002,0.0
+					</series>
+					<series title="h4.is_safe * 10" type="l" color="0x8000ff" encoding="csv">0.0,0.0
+10.000002,0.0
+					</series>
+					<comment/>
+				</plot>
+			</result>
+		</query>
+	</queries>
+</nta>
