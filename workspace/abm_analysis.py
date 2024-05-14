@@ -15,7 +15,7 @@ from pathlib import Path
 from pyNetLogo import NetLogoException
 import pyNetLogo
 from scipy.stats import mannwhitneyu
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import configparser
 
 config = configparser.ConfigParser()
@@ -38,34 +38,15 @@ TURTLE_PRESENT_REPORTER = "count turtles"  # type:str
 EVACUATED_REPORTER = "number_passengers - count agents + 1"  # type:str
 DEAD_REPORTER = "count agents with [ st_dead = 1 ]"  # type:str
 SEED_SIMULATION_REPORTER = "seed-simulation"
-FALL_LENGTH_REPORTER = "fall-length-simulation"
+STAFF_REQUEST_REPORTER = "report-staff-requests"
 SET_STARTING_SEED_COMMAND = "set starting-seed {}"
 SET_SIMULATION_ID_COMMAND = 'set SIMULATION_ID "{}"'  # type:str
-
-# SET_STAFF_SUPPORT_COMMAND = "set REQUEST_STAFF_SUPPORT {}"  # type: str
-# SET_PASSENGER_SUPPORT_COMMAND = "set REQUEST_BYSTANDER_SUPPORT {}"  # type: str
-# SET_FALL_LENGTH_COMMAND = "set DEFAULT_FALL_LENGTH {}"  # type:str
-#
-# ENABLE_STAFF_COMMAND = SET_STAFF_SUPPORT_COMMAND.format("TRUE")  # type:str
-# ENABLE_PASSENGER_COMMAND = SET_PASSENGER_SUPPORT_COMMAND.format("TRUE")  # type:str
-
-# NO_SUPPORT_COLUMN = "no-support"  # type:str
-# ONLY_STAFF_SUPPORT_COLUMN = "staff-support"  # type:str
-# ONLY_PASSENGER_SUPPORT_COLUMN = "passenger-support"  # type:str
-# ADAPTIVE_SUPPORT_COLUMN = "adaptive-support"
-
-# SIMULATION_SCENARIOS = {NO_SUPPORT_COLUMN: [],
-#                         ONLY_STAFF_SUPPORT_COLUMN: [ENABLE_STAFF_COMMAND],
-#                         ONLY_PASSENGER_SUPPORT_COLUMN: [ENABLE_PASSENGER_COMMAND],
-#                         ADAPTIVE_SUPPORT_COLUMN: [ENABLE_PASSENGER_COMMAND,
-#                                                   ENABLE_STAFF_COMMAND]}  # type: Dict[str, List[str]]
 
 MAX_NETLOGO_TICKS = 2000  # type: int
 
 
 # Using https://www.stat.ubc.ca/~rollin/stats/ssize/n2.html
 # And https://www.statology.org/pooled-standard-deviation-calculator/
-
 
 # function to calculate Cohen's d for independent samples
 # Inspired by: https://machinelearningmastery.com/effect-size-measures-in-python/
@@ -93,10 +74,12 @@ def start_experiments(experiment_configurations, results_file, samples, random_s
     experiment_data = {}  # type: Dict[str, List[float]]
     experiment_data['random_seed'] = random_seeds
     for experiment_name, experiment_commands in experiment_configurations.items():
-        scenario_times = run_simulations(experiment_name, samples,
-                                         post_setup_commands=experiment_commands,
-                                         random_seeds=random_seeds)  # type:List[float]
-        experiment_data[experiment_name] = scenario_times
+        scenario_metrics = run_simulations(experiment_name, samples,
+                                           post_setup_commands=experiment_commands,
+                                           random_seeds=random_seeds)
+        experiment_data[experiment_name + '_evacuation_time'] = [x[0] for x in scenario_metrics]
+        experiment_data[experiment_name + '_victims'] = [x[1] for x in scenario_metrics]
+        experiment_data[experiment_name + '_staff_requests'] = [x[2] for x in scenario_metrics]
 
     end_time = time.time()  # type: float
     print("Simulation finished after {} seconds".format(end_time - start_time))
@@ -134,13 +117,16 @@ def run_simulation(netlogo_link, simulation_id, post_setup_commands, random_seed
             metrics_dataframe[TURTLE_PRESENT_REPORTER] == metrics_dataframe[DEAD_REPORTER]]
 
         evacuation_time = evacuation_finished.index.min()  # type: float
-        print("id:{} seed:{} evacuation time {}".format(simulation_id, current_seed, evacuation_time))
+        n_victims = int(netlogo_link.report(DEAD_REPORTER))
+        staff_requests = int(netlogo_link.report(STAFF_REQUEST_REPORTER))
+        print("id:{} seed:{} evacuation time {} dead {} requests {}".format(simulation_id, current_seed,
+                                                                            evacuation_time, n_victims, staff_requests))
         if math.isnan(evacuation_time):
             metrics_dataframe.to_csv("data/nan_df.csv")
             print("DEBUG!!! info to data/nan_df.csv")
 
         # generate_video(simulation_id=simulation_id)
-        return evacuation_time
+        return evacuation_time, n_victims, staff_requests
     except NetLogoException:
         traceback.print_exc()
         raise
@@ -175,7 +161,7 @@ def run_simulations(experiment_name, samples, post_setup_commands, gui=False, ra
                               "random_seed": random_seeds[simulation_index]}
                              for simulation_index in range(samples)]
 
-    results = []  # type: List[float]
+    results = []  # type: List[Tuple[float, int, int]]
     for exp, params in enumerate(simulation_parameters):
         link = initialize(gui, params['random_seed'])
         simulation_output = run_simulation(link, params['simulation_id'], params['post_setup_commands'],
@@ -197,21 +183,15 @@ def get_dataframe(csv_file):
 
 
 def plot_results(csv_file, samples_in_title=False):
-    # type: (str, bool) -> None
     file_description = Path(csv_file).stem  # type: str
     results_dataframe = get_dataframe(csv_file)  # type: pd.DataFrame
-    results_dataframe = results_dataframe.loc[:, results_dataframe.columns != 'random_seed']
-    # results_dataframe = results_dataframe.rename(columns={
-    #     NO_SUPPORT_COLUMN: "No Support",
-    #     ONLY_STAFF_SUPPORT_COLUMN: "Proself-Oriented",
-    #     ONLY_PASSENGER_SUPPORT_COLUMN: "Prosocial-Oriented",
-    #     ADAPTIVE_SUPPORT_COLUMN: "Adaptive"
-    # })
+    cols_to_plot = ['no-support_evacuation_time', 'staff-support_evacuation_time',
+                    'passenger-support_evacuation_time', 'adaptive-support_evacuation_time']
+    results_dataframe = results_dataframe[cols_to_plot]
 
     print(results_dataframe.describe())
 
     title = ""
-    # order = ["No Support", "Prosocial-Oriented", "Proself-Oriented", "Adaptive"]  # type: List[str]
     order = None
 
     if samples_in_title:
@@ -278,11 +258,11 @@ def get_current_file_metrics(simulation_scenarios, current_file):
     metrics_dict = {}
 
     for scenario in simulation_scenarios.keys():
-        metrics_dict["{}_mean".format(scenario)] = results_dataframe[scenario].mean()
-        metrics_dict["{}_std".format(scenario)] = results_dataframe[scenario].std()
-        metrics_dict["{}_median".format(scenario)] = results_dataframe[scenario].median()
-        metrics_dict["{}_min".format(scenario)] = results_dataframe[scenario].min()
-        metrics_dict["{}_max".format(scenario)] = results_dataframe[scenario].max()
+        metrics_dict["{}_mean".format(scenario)] = results_dataframe[scenario + '_evacuation_time'].mean()
+        metrics_dict["{}_std".format(scenario)] = results_dataframe[scenario + '_evacuation_time'].std()
+        metrics_dict["{}_median".format(scenario)] = results_dataframe[scenario + '_evacuation_time'].median()
+        metrics_dict["{}_min".format(scenario)] = results_dataframe[scenario + '_evacuation_time'].min()
+        metrics_dict["{}_max".format(scenario)] = results_dataframe[scenario + '_evacuation_time'].max()
 
     return metrics_dict
 
@@ -293,8 +273,8 @@ def perform_analysis(target_scenario, simulation_scenarios, current_file):
 
     for alternative_scenario in simulation_scenarios.keys():
         if alternative_scenario != target_scenario:
-            test_hypothesis(first_scenario_column=target_scenario,
-                            second_scenario_column=alternative_scenario,
+            test_hypothesis(first_scenario_column=target_scenario + '_evacuation_time',
+                            second_scenario_column=alternative_scenario + '_evacuation_time',
                             alternative="less",
                             csv_file=current_file)
 
