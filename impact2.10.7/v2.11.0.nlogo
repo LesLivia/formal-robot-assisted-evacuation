@@ -135,6 +135,7 @@ globals [; GLOBALS
          DEFAULT_FALL_LENGTH
          SIMULATION_ID
          STAFF_HELP_FACTOR
+         STAFF_CALLS
          PASSENGER_HELP_FACTOR
          ROBOT_REQUEST_BONUS
          REQUEST_STAFF_SUPPORT
@@ -1286,6 +1287,7 @@ to request-staff-support
     log-turtle "Staff contacted:" nearest-staff-member
 
     set staff-requests (staff-requests + 1)
+    set STAFF_CALLS (STAFF_CALLS + 1)
     prepare-new-search
   ][
     ; No staff available for help. Waiting.
@@ -1293,6 +1295,10 @@ to request-staff-support
   ]
 
 
+end
+
+to-report report-staff-requests
+  report STAFF_CALLS
 end
 
 to-report passenger-recovered? [fallen-passenger]
