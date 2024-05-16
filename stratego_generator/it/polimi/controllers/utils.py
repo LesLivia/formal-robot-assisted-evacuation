@@ -17,7 +17,7 @@ def process_regressors(regressors: List[Regressor], prob_gi: float, fallen_dist:
     f_label = 'fu' if fallen_dist <= D_TH else 'fo'
     s_label = 'su' if staff_dist <= D_TH else 'so'
 
-    gi_label = 'GI_{}_{}'.format(f_label, s_label)
+    gi_label = 'GI'
     ngi_label = 'N' + gi_label
 
     for reg in regressors:

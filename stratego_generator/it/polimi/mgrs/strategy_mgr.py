@@ -14,20 +14,18 @@ else:
     config.read('./resources/config/config.ini')
 config.sections()
 
-STRATEGY_NAME = config['STRATEGY SETTINGS']['STRATEGY_NAME']
-STRATEGY_PATH = config['STRATEGY SETTINGS']['STRATEGY_PATH'].format(STRATEGY_NAME)
-
-if 'impact' in curr_path:
-    STRATEGY_PATH = curr_path.replace('impact2.10.7', 'stratego_generator' + STRATEGY_PATH[1:])
-
 
 def generate_strategy():
     LOGGER.info(config['UPPAAL SETTINGS']['UPPAAL_SCRIPT_PATH'])
 
 
-def parse_strategy():
+def parse_strategy(strat_name):
+    STRATEGY_PATH = config['STRATEGY SETTINGS']['STRATEGY_PATH'].format(strat_name)
+    if 'impact' in curr_path:
+        STRATEGY_PATH = curr_path.replace('impact2.10.7', 'stratego_generator' + STRATEGY_PATH[1:])
+
     with open(STRATEGY_PATH) as opt_strategy_file:
         data: str = opt_strategy_file.read()
-        optimized_strategy = parse_optimized_strategy(STRATEGY_NAME, data)
+        optimized_strategy = parse_optimized_strategy(strat_name, data)
 
     return optimized_strategy

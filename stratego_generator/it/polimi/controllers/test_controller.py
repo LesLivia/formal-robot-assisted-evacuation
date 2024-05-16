@@ -1,4 +1,5 @@
 import configparser
+import math
 import os
 import random
 import sys
@@ -32,6 +33,7 @@ for sub in SUBMODULE_PATHS:
 
 from src.strategyviz.strategy2pta.opt_strategy import OptimizedStrategy
 from it.polimi.mgrs.strategy_mgr import parse_strategy
+from it.polimi.mgrs.model_mgr import generate_model
 from it.polimi.controllers.utils import process_regressors
 
 gi_prob_distr = config['STRATEGY SETTINGS']['GI_PROB_DISTR'].lower()
@@ -43,8 +45,17 @@ if gi_prob_distr == 'uniform':
 else:
     gi_prob = float(config['STRATEGY SETTINGS']['GI_PROB'])
 
+rat_deg = config['STRATEGY SETTINGS']['RAT_DEG']
+walking_speed = config['STRATEGY SETTINGS']['WALKING_SPEED']
+time_bound = config['STRATEGY SETTINGS']['TIME_BOUND']
+strategy_name = 'end_min_t_{}_{}'.format(rat_deg, time_bound)
+
+params = {'TIME_BOUND': time_bound, 'WALKING_SPEED': walking_speed, 'RAT_DEG': rat_deg,
+          'DIST_V': int(math.ceil(float(sys.argv[8]) * 10)), 'DIST_FR': int(math.ceil(float(sys.argv[9]) * 10))}
+
 # Parses Uppaal Stratego verified strategy
-strategy: OptimizedStrategy = parse_strategy()
+generate_model(params, strategy_name)
+strategy: OptimizedStrategy = parse_strategy(strategy_name)
 decisions = process_regressors(strategy.regressors, gi_prob, float(sys.argv[8]), float(sys.argv[9]))
 
 # Logs inputs and outputs

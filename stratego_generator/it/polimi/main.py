@@ -13,7 +13,8 @@ params = parse_params()
 
 LOGGER.info('Generating Uppaal Stratego model...')
 
-generate_model()
+test_params = {'TIME_BOUND': 50, 'WALKING_SPEED': 6, 'DIST_V': 50, 'DIST_FR': 40, 'RAT_DEG': 1.0}
+generate_model(test_params, 'end_min_t')
 
 LOGGER.info('Generating Strategy...')
 
