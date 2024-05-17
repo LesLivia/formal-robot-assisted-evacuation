@@ -10,14 +10,18 @@ def process_action(act: str):
     return CHAN_TO_ACT[upp_chan]
 
 
-def process_regressors(regressors: List[Regressor], prob_gi: float, fallen_dist: float, staff_dist: float):
+def process_regressors(regressors: List[Regressor], prob_gi: float, fallen_dist: float,
+                       staff_dist: float, adhoc_strat: bool):
     calibrated_decisions = dict()
 
-    D_TH = 5
-    f_label = 'fu' if fallen_dist <= D_TH else 'fo'
-    s_label = 'su' if staff_dist <= D_TH else 'so'
+    if not adhoc_strat:
+        D_TH = 5
+        f_label = 'fu' if fallen_dist <= D_TH else 'fo'
+        s_label = 'su' if staff_dist <= D_TH else 'so'
+        gi_label = 'GI_{}_{}'.format(f_label, s_label)
+    else:
+        gi_label = 'GI'
 
-    gi_label = 'GI'
     ngi_label = 'N' + gi_label
 
     for reg in regressors:

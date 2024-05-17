@@ -48,15 +48,21 @@ else:
 rat_deg = config['STRATEGY SETTINGS']['RAT_DEG']
 walking_speed = config['STRATEGY SETTINGS']['WALKING_SPEED']
 time_bound = config['STRATEGY SETTINGS']['TIME_BOUND']
-strategy_name = 'end_min_t_{}_{}'.format(rat_deg, time_bound)
 
 params = {'TIME_BOUND': time_bound, 'WALKING_SPEED': walking_speed, 'RAT_DEG': rat_deg,
           'DIST_V': int(math.ceil(float(sys.argv[8]) * 10)), 'DIST_FR': int(math.ceil(float(sys.argv[9]) * 10))}
 
 # Parses Uppaal Stratego verified strategy
-generate_model(params, strategy_name)
+ADHOC_STRAT = config['STRATEGY SETTINGS']['ADHOC_STRAT'].lower() == 'true'
+
+if ADHOC_STRAT:
+    strategy_name = 'end_min_t_{}_{}'.format(rat_deg, time_bound)
+    generate_model(params, strategy_name)
+else:
+    strategy_name = config['STRATEGY SETTINGS']['STRATEGY_NAME']
+
 strategy: OptimizedStrategy = parse_strategy(strategy_name)
-decisions = process_regressors(strategy.regressors, gi_prob, float(sys.argv[8]), float(sys.argv[9]))
+decisions = process_regressors(strategy.regressors, gi_prob, float(sys.argv[8]), float(sys.argv[9]), ADHOC_STRAT)
 
 # Logs inputs and outputs
 if LOGGING:
