@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import statsmodels.api as sm
-from pathlib import Path
 from pyNetLogo import NetLogoException
 import pyNetLogo
 from scipy.stats import mannwhitneyu
@@ -182,30 +181,24 @@ def get_dataframe(csv_file):
     return results_dataframe
 
 
-def plot_results(csv_file, samples_in_title=False):
-    file_description = Path(csv_file).stem  # type: str
-    results_dataframe = get_dataframe(csv_file)  # type: pd.DataFrame
+def plot_results(csv_file_name, csv_file_path, samples_in_title=False):
+    results_dataframe = get_dataframe(csv_file_path + csv_file_name)  # type: pd.DataFrame
     cols_to_plot = ['no-support_evacuation_time', 'staff-support_evacuation_time',
                     'passenger-support_evacuation_time', 'adaptive-support_evacuation_time']
     results_dataframe = results_dataframe[cols_to_plot]
-
-    print(results_dataframe.describe())
 
     title = ""
     order = None
 
     if samples_in_title:
         title = "{} samples".format(len(results_dataframe))
+
+    plt.figure(figsize=[20, 5])
     _ = sns.violinplot(data=results_dataframe, order=order).set_title(title)
-    plt.savefig(WORKSPACE_FOLDER + "img/" + file_description + "_violin_plot.png", bbox_inches='tight', pad_inches=0)
-    plt.savefig(WORKSPACE_FOLDER + "img/" + file_description + "_violin_plot.eps", bbox_inches='tight', pad_inches=0)
+    plot_name = csv_file_name.replace('.csv', '') + "_violin_plot.png"
+    plt.savefig(WORKSPACE_FOLDER + "img/" + plot_name, bbox_inches='tight', pad_inches=0)
     plt.show()
     plt.clf()
-
-    _ = sns.stripplot(data=results_dataframe, order=order, jitter=True).set_title(title)
-    plt.savefig(WORKSPACE_FOLDER + "img/" + file_description + "_strip_plot.png", bbox_inches='tight', pad_inches=0)
-    plt.savefig(WORKSPACE_FOLDER + "img/" + file_description + "_strip_plot.eps", bbox_inches='tight', pad_inches=0)
-    plt.show()
 
 
 def test_hypothesis(first_scenario_column, second_scenario_column, csv_file, alternative="two-sided"):
@@ -267,15 +260,15 @@ def get_current_file_metrics(simulation_scenarios, current_file):
     return metrics_dict
 
 
-def perform_analysis(target_scenario, simulation_scenarios, current_file):
-    plot_results(csv_file=current_file)
-    current_file_metrics = get_current_file_metrics(simulation_scenarios, current_file)
+def perform_analysis(target_scenario, simulation_scenarios, current_file_path, current_file_name):
+    plot_results(csv_file_name=current_file_name, csv_file_path=current_file_path, samples_in_title=True)
+    current_file_metrics = get_current_file_metrics(simulation_scenarios, current_file_path + current_file_name)
 
     for alternative_scenario in simulation_scenarios.keys():
         if alternative_scenario != target_scenario:
             test_hypothesis(first_scenario_column=target_scenario + '_evacuation_time',
                             second_scenario_column=alternative_scenario + '_evacuation_time',
                             alternative="less",
-                            csv_file=current_file)
+                            csv_file=current_file_path + current_file_name)
 
     return current_file_metrics
