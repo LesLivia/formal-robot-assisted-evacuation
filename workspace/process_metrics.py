@@ -36,7 +36,7 @@ def process_csv(file):
                     except ValueError:
                         pass
 
-    processed_metrics = {key: st.mean(metrics[key]) for key in metrics}
+    processed_metrics = {key: st.median(metrics[key]) for key in metrics}
 
     return processed_metrics
 
@@ -61,7 +61,7 @@ configurations = ['no-support', 'staff-support', 'passenger-support', 'adaptive-
 metrics_keys = ['evacuation_time', 'victims', 'staff_requests']
 
 for key in exp_metrics:
-    print('-- RESULTS for strategy:{} --'.format(key))
+    print('\n\n\n-- RESULTS for strategy:{} --'.format(key))
 
     for metric_key in metrics_keys:
         print('\n\t\t\t\t\t\t\t{}'.format(metric_key))
