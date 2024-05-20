@@ -136,6 +136,8 @@ globals [; GLOBALS
          SIMULATION_ID
          STAFF_HELP_FACTOR
          STAFF_CALLS
+         N_PASSENGERS
+         N_STAFF
          PASSENGER_HELP_FACTOR
          ROBOT_REQUEST_BONUS
          REQUEST_STAFF_SUPPORT
@@ -266,6 +268,9 @@ agents-own [
 to setup
   clear-all
   setup-seed
+
+  set number_passengers N_PASSENGERS
+  set _number_staff_members N_STAFF
   random-seed starting-seed
 
   set list_exits []
@@ -2499,7 +2504,7 @@ number_passengers
 number_passengers
 1
 6743
-462
+189
 1
 1
 NIL
@@ -2572,7 +2577,7 @@ _number_staff_members
 _number_staff_members
 0
 64
-32
+12
 1
 1
 NIL
