@@ -45,18 +45,23 @@ if gi_prob_distr == 'uniform':
 else:
     gi_prob = float(config['STRATEGY SETTINGS']['GI_PROB'])
 
-rat_deg = config['STRATEGY SETTINGS']['RAT_DEG']
 walking_speed = config['STRATEGY SETTINGS']['WALKING_SPEED']
 time_bound = config['STRATEGY SETTINGS']['TIME_BOUND']
 
-params = {'TIME_BOUND': time_bound, 'WALKING_SPEED': walking_speed, 'RAT_DEG': rat_deg,
-          'DIST_V': int(math.ceil(float(sys.argv[8]) * 10)), 'DIST_FR': int(math.ceil(float(sys.argv[9]) * 10))}
-
 # Parses Uppaal Stratego verified strategy
 ADHOC_STRAT = config['STRATEGY SETTINGS']['ADHOC_STRAT'].lower() == 'true'
+ADD_PI = config['STRATEGY SETTINGS']['ADD_PI'].lower() == 'true'
 
 if ADHOC_STRAT:
+    if ADD_PI:
+        rat_deg = 0.33 * (int(sys.argv[2]) == int(sys.argv[5])) + 0.33 * (
+                int(sys.argv[3]) == int(sys.argv[6])) + 0.33 * (int(sys.argv[4]) == int(sys.argv[7]))
+    else:
+        rat_deg = config['STRATEGY SETTINGS']['RAT_DEG']
+
     strategy_name = 'end_min_t_{}_{}'.format(rat_deg, time_bound)
+    params = {'TIME_BOUND': time_bound, 'WALKING_SPEED': walking_speed, 'RAT_DEG': rat_deg,
+              'DIST_V': int(math.ceil(float(sys.argv[8]) * 10)), 'DIST_FR': int(math.ceil(float(sys.argv[9]) * 10))}
     generate_model(params, strategy_name)
 else:
     strategy_name = config['STRATEGY SETTINGS']['STRATEGY_NAME']

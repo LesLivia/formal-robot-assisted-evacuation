@@ -20,6 +20,7 @@ void set(double r, double s, bool update_time) {
     r_payoff = r;
     s_payoff = s;
     if (update_time) evac_time = t;
+	else evac_time = 0;
 }</declaration>
 		<location id="id0" x="-323" y="-850">
 			<name x="-357" y="-884">__init__</name>
