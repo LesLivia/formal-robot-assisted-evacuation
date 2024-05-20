@@ -39,7 +39,7 @@ def main():
         "passenger-support": [SET_FRAME_GENERATION_COMMAND.format("FALSE"),
                               SET_FALL_LENGTH_COMMAND.format(FALL_DURATION),
                               SET_PASSENGER_SUPPORT_COMMAND.format("TRUE")],
-        "adaptive-support": [SET_FRAME_GENERATION_COMMAND.format("TRUE"),
+        "adaptive-support": [SET_FRAME_GENERATION_COMMAND.format("FALSE"),
                              SET_FALL_LENGTH_COMMAND.format(FALL_DURATION),
                              SET_PASSENGER_SUPPORT_COMMAND.format("TRUE"),
                              SET_STAFF_SUPPORT_COMMAND.format("TRUE")]
