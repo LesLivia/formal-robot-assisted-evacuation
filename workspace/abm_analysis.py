@@ -67,15 +67,20 @@ def calculate_sample_size(mean_1, mean_2, std_dev_1, std_dev_2, alpha=0.05, powe
     return result
 
 
-def start_experiments(experiment_configurations, results_file, samples, random_seeds):
+def start_experiments(experiment_configurations, results_file, samples,
+                      random_seeds, random_passengers, random_staff):
     start_time = time.time()  # type: float
 
     experiment_data = {}  # type: Dict[str, List[float]]
     experiment_data['random_seed'] = random_seeds
+    experiment_data['random_pass'] = random_passengers
+    experiment_data['random_staff'] = random_staff
+
     for experiment_name, experiment_commands in experiment_configurations.items():
         scenario_metrics = run_simulations(experiment_name, samples,
                                            post_setup_commands=experiment_commands,
-                                           random_seeds=random_seeds)
+                                           random_seeds=random_seeds, random_passengers=random_passengers,
+                                           random_staff=random_staff)
         experiment_data[experiment_name + '_evacuation_time'] = [x[0] for x in scenario_metrics]
         experiment_data[experiment_name + '_victims'] = [x[1] for x in scenario_metrics]
         experiment_data[experiment_name + '_staff_requests'] = [x[2] for x in scenario_metrics]
@@ -89,7 +94,8 @@ def start_experiments(experiment_configurations, results_file, samples, random_s
     print("Data written to {}".format(results_file))
 
 
-def run_simulation(netlogo_link, simulation_id, post_setup_commands, random_seed):
+def run_simulation(netlogo_link, simulation_id, post_setup_commands,
+                   random_seed, random_pass, random_staff):
     try:
         netlogo_link.command("setup")
 
@@ -99,7 +105,8 @@ def run_simulation(netlogo_link, simulation_id, post_setup_commands, random_seed
         netlogo_link.command(SET_SIMULATION_ID_COMMAND.format(simulation_id))
 
         current_seed = netlogo_link.report(SEED_SIMULATION_REPORTER)  # type:str
-        print("id:{} seed:{} {} executed".format(simulation_id, current_seed, starting_seed_cmd))
+        print("id:{} seed:{} {} {} {} executed".format(simulation_id, current_seed,
+                                                       starting_seed_cmd, random_pass, random_staff))
 
         if len(post_setup_commands) > 0:
             for post_setup_command in post_setup_commands:
@@ -135,7 +142,7 @@ def run_simulation(netlogo_link, simulation_id, post_setup_commands, random_seed
     return None
 
 
-def initialize(gui, random_seed):
+def initialize(gui, random_seed, random_pass, random_staff):
     netlogo_link = pyNetLogo.NetLogoLink(netlogo_home=NETLOGO_HOME,
                                          netlogo_version=NETLOGO_VERSION,
                                          gui=gui)
@@ -145,6 +152,10 @@ def initialize(gui, random_seed):
         for i, line in enumerate(lines):
             if 'starting-seed' in line:
                 lines[i] = SET_STARTING_SEED_COMMAND.format(random_seed) + '\n'
+            if 'N_PASSENGERS' in line:
+                lines[i] = line.replace('??', str(random_pass))
+            if 'N_STAFF' in line:
+                lines[i] = line.replace('??', str(random_staff))
                 break
 
     with open(NETLOGO_CONFIG_FILE, "w") as config_file:
@@ -154,17 +165,20 @@ def initialize(gui, random_seed):
     return netlogo_link
 
 
-def run_simulations(experiment_name, samples, post_setup_commands, gui=False, random_seeds=None):
+def run_simulations(experiment_name, samples, post_setup_commands, gui=False,
+                    random_seeds=None, random_passengers=None, random_staff=None):
     simulation_parameters = [{"simulation_id": "{}_{}".format(experiment_name, simulation_index),
                               "post_setup_commands": post_setup_commands,
-                              "random_seed": random_seeds[simulation_index]}
+                              "random_seed": random_seeds[simulation_index],
+                              "random_pass": random_passengers[simulation_index],
+                              "random_staff": random_staff[simulation_index]}
                              for simulation_index in range(samples)]
 
     results = []  # type: List[Tuple[float, int, int]]
     for exp, params in enumerate(simulation_parameters):
-        link = initialize(gui, params['random_seed'])
+        link = initialize(gui, params['random_seed'], params['random_pass'], params['random_staff'])
         simulation_output = run_simulation(link, params['simulation_id'], params['post_setup_commands'],
-                                           params['random_seed'])
+                                           params['random_seed'], params['random_pass'], params['random_staff'])
         if simulation_output:
             results.append(simulation_output)
 
@@ -239,11 +253,13 @@ def test_hypothesis(first_scenario_column, second_scenario_column, csv_file, alt
         print(alternative_hypothesis)
 
 
-def simulate_and_store(simulation_scenarios, results_file_name, samples, random_seeds):
+def simulate_and_store(simulation_scenarios, results_file_name, samples,
+                       random_seeds, random_passengers, random_staff):
     updated_simulation_scenarios = {scenario_name: commands
                                     for scenario_name, commands in
                                     simulation_scenarios.items()}  # type: Dict[str, List[str]]
-    start_experiments(updated_simulation_scenarios, results_file_name, samples, random_seeds)
+    start_experiments(updated_simulation_scenarios, results_file_name, samples,
+                      random_seeds, random_passengers, random_staff)
 
 
 def get_current_file_metrics(simulation_scenarios, current_file):

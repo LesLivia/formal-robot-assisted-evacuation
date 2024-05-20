@@ -1,5 +1,7 @@
 to setup-seed
   set starting-seed ??
+  set N_PASSENGERS ??
+  set N_STAFF ??
 end
 
 to setup-model

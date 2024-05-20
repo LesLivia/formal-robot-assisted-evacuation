@@ -1,3 +1,4 @@
+import configparser
 import sys
 from random import randint
 
@@ -5,8 +6,17 @@ import pandas as pd
 
 from abm_analysis import simulate_and_store, perform_analysis, WORKSPACE_FOLDER
 
+config = configparser.ConfigParser()
+config.read('./resources/config.ini')
+config.sections()
+
 MIN_SEED = -2147483648
 MAX_SEED = 2147483647
+
+PASS_MIN = int(config['NETLOGO']['PASS_MIN'])
+PASS_MAX = int(config['NETLOGO']['PASS_MAX'])
+STAFF_MIN = int(config['NETLOGO']['STAFF_MIN'])
+STAFF_MAX = int(config['NETLOGO']['STAFF_MAX'])
 
 SET_FRAME_GENERATION_COMMAND = "set ENABLE_FRAME_GENERATION {}"
 SET_FALL_LENGTH_COMMAND = "set DEFAULT_FALL_LENGTH {}"
@@ -38,8 +48,11 @@ def main():
     results_file_path = WORKSPACE_FOLDER + "data/"
     results_file_name = "exp_{}_{}_{}.csv".format(STRAT_NAME, N_SAMPLES, FALL_DURATION)
     random_seeds = [randint(MIN_SEED, MAX_SEED) for i in range(N_SAMPLES)]
+    random_passengers = [randint(PASS_MIN, PASS_MAX) for i in range(N_SAMPLES)]
+    random_staff = [randint(STAFF_MIN, STAFF_MAX) for i in range(N_SAMPLES)]
 
-    simulate_and_store(simulation_scenarios, results_file_path + results_file_name, N_SAMPLES, random_seeds)
+    simulate_and_store(simulation_scenarios, results_file_path + results_file_name, N_SAMPLES,
+                       random_seeds, random_passengers, random_staff)
     metrics = pd.DataFrame([perform_analysis("adaptive-support", simulation_scenarios,
                                              results_file_path, results_file_name)])
     metrics.to_csv(WORKSPACE_FOLDER + "data/metrics_{}_{}_{}.csv".format(STRAT_NAME, N_SAMPLES, FALL_DURATION))
