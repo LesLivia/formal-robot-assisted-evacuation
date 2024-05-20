@@ -1597,7 +1597,8 @@ to-report request-candidate-help?
   ]
 
   file-open "out.txt"
-  file-print controller-response
+  file-print (word number_passengers " " _number_staff_members " " starting-seed " " helper-gender " " helper-culture " " helper-age " "
+    fallen-gender " " fallen-culture " " fallen-age " " helper-fallen-distance " " staff-fallen-distance " " controller-response )
   file-close
 
   user-message word "Decision: " controller-response
@@ -2547,7 +2548,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-1
+0
 1
 -1000
 
@@ -2558,7 +2559,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-1
+0
 1
 -1000
 
