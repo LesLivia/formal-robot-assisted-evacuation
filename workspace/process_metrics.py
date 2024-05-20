@@ -4,6 +4,8 @@ import os
 import statistics as st
 from typing import List, Tuple, Dict
 
+import matplotlib.pyplot as plt
+
 config = configparser.ConfigParser()
 config.read('./resources/config.ini')
 config.sections()
@@ -71,3 +73,38 @@ for key in exp_metrics:
             for conf in configurations:
                 row += '{:.1f}\t\t\t'.format(length_value[2][conf + '_' + metric_key])
             print(row)
+
+out_prefix = 'out_'
+out_cols = ['number_of_passengers', 'number_of_staff_members', 'seed', 'helper-gender',
+            'helper-culture', 'helper-age', 'fallen-gender', 'fallen-culture',
+            'fallen-age', 'helper-fallen-distance', 'staff-fallen-distance', 'decision']
+decisions_const = {'ask-help': 1, 'call-staff': 2}
+colors = {'ask-help': 'red', 'call-staff': 'blue'}
+out_data: List[Dict[str, float]] = []
+
+
+def map_value(x):
+    try:
+        return float(x)
+    except ValueError:
+        return float(decisions_const[x.replace('\n', '')])
+
+
+for file in os.listdir(CSV_PATH):
+    if file.startswith(out_prefix):
+        out_data = []
+        with open(CSV_PATH + '/' + file) as csv_file:
+            lines = csv_file.readlines()
+            for line in lines:
+                values = line.split(' ')
+                out_data.append({out_cols[i]: map_value(v) for i, v in enumerate(values)})
+            fig = plt.figure()
+            ax = fig.add_subplot()
+            for decision in decisions_const:
+                color = colors[decision]
+                ax.scatter(
+                    [x['helper-fallen-distance'] for x in out_data if x['decision'] == decisions_const[decision]],
+                    [x['staff-fallen-distance'] for x in out_data if x['decision'] == decisions_const[decision]],
+                    color=color, s=0.5)
+            ax.set_title(file.replace(out_prefix, ''))
+            plt.show()
