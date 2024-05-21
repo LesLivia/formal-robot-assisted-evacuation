@@ -1,4 +1,5 @@
 import configparser
+import math
 import sys
 from random import randint
 
@@ -49,7 +50,7 @@ def main():
     results_file_name = "exp_{}_{}_{}.csv".format(STRAT_NAME, N_SAMPLES, FALL_DURATION)
     random_seeds = [randint(MIN_SEED, MAX_SEED) for i in range(N_SAMPLES)]
     random_passengers = [randint(PASS_MIN, PASS_MAX) for i in range(N_SAMPLES)]
-    random_staff = [randint(STAFF_MIN, STAFF_MAX) for i in range(N_SAMPLES)]
+    random_staff = [int(math.ceil(randint(STAFF_MIN, STAFF_MAX) / 100 * n_pass)) for n_pass in random_passengers]
 
     simulate_and_store(simulation_scenarios, results_file_path + results_file_name, N_SAMPLES,
                        random_seeds, random_passengers, random_staff)

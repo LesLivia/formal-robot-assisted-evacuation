@@ -5,6 +5,7 @@ import statistics as st
 from typing import List, Tuple, Dict
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 config = configparser.ConfigParser()
 config.read('./resources/config.ini')
@@ -98,13 +99,26 @@ for file in os.listdir(CSV_PATH):
             for line in lines:
                 values = line.split(' ')
                 out_data.append({out_cols[i]: map_value(v) for i, v in enumerate(values)})
-            fig = plt.figure()
-            ax = fig.add_subplot()
+                genders = (out_data[-1]['helper-gender'], out_data[-1]['fallen-gender'])
+                cultures = (out_data[-1]['helper-culture'], out_data[-1]['fallen-culture'])
+                ages = (out_data[-1]['helper-age'], out_data[-1]['fallen-age'])
+                out_data[-1]['rat_deg'] = 0.33 * (genders[0] == genders[1]) + 0.33 * (
+                        cultures[0] == cultures[1]) + 0.33 * (ages[0] == ages[1])
+
+            _dummy = Axes3D
+            fig = plt.figure(figsize=[10, 10])
+            ax = fig.add_subplot(projection='3d')
+            labels = ['helper-fallen-distance', 'staff-fallen-distance', 'rat_deg']
             for decision in decisions_const:
                 color = colors[decision]
                 ax.scatter(
-                    [x['helper-fallen-distance'] for x in out_data if x['decision'] == decisions_const[decision]],
-                    [x['staff-fallen-distance'] for x in out_data if x['decision'] == decisions_const[decision]],
-                    color=color, s=0.5)
+                    [x[labels[0]] for x in out_data if x['decision'] == decisions_const[decision]],
+                    [x[labels[1]] for x in out_data if x['decision'] == decisions_const[decision]],
+                    [x[labels[2]] for x in out_data if x['decision'] == decisions_const[decision]],
+                    color=color, s=2.0)
+            ax.view_init(elev=20, azim=120)
+            ax.set_xlabel(labels[0])
+            ax.set_ylabel(labels[1])
+            ax.set_zlabel(labels[2])
             ax.set_title(file.replace(out_prefix, ''))
             plt.show()
