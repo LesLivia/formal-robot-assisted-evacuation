@@ -270,7 +270,8 @@ to setup
   setup-seed
 
   set number_passengers N_PASSENGERS
-  set _number_staff_members N_STAFF
+  set _number_normal_staff_members N_STAFF
+  set _number_staff_members 0
   random-seed starting-seed
 
   set list_exits []
@@ -2504,7 +2505,7 @@ number_passengers
 number_passengers
 1
 6743
-189
+485
 1
 1
 NIL
@@ -2553,7 +2554,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-0
+1
 1
 -1000
 
@@ -2564,7 +2565,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-0
+1
 1
 -1000
 
@@ -2577,7 +2578,7 @@ _number_staff_members
 _number_staff_members
 0
 64
-12
+0
 1
 1
 NIL
@@ -2880,7 +2881,7 @@ _number_normal_staff_members
 _number_normal_staff_members
 0
 64
-8
+50
 1
 1
 NIL
