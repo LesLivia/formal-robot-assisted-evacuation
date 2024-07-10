@@ -1603,7 +1603,7 @@ to-report request-candidate-help?
   ]
 
   file-open "out.txt"
-  file-print (word number_passengers " " _number_staff_members " " starting-seed " " helper-gender " " helper-culture " " helper-age " "
+  file-print (word number_passengers " " _number_normal_staff_members " " starting-seed " " helper-gender " " helper-culture " " helper-age " "
     fallen-gender " " fallen-culture " " fallen-age " " helper-fallen-distance " " staff-fallen-distance " " controller-response )
   file-close
 
@@ -2881,7 +2881,7 @@ _number_normal_staff_members
 _number_normal_staff_members
 0
 64
-50
+8
 1
 1
 NIL

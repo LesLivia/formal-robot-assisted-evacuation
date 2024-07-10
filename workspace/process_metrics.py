@@ -19,6 +19,8 @@ out_prefix = 'out_'
 out_cols = ['number_of_passengers', 'number_of_staff_members', 'seed', 'helper-gender',
             'helper-culture', 'helper-age', 'fallen-gender', 'fallen-culture',
             'fallen-age', 'helper-fallen-distance', 'staff-fallen-distance', 'decision']
+gambit_metric = 'gambit-support_evacuation_time'
+missing_gambit_metrics = ['gambit-support_victims', 'gambit-support_staff_requests']
 decisions_const = {'ask-help': 1, 'call-staff': 2}
 colors = {'ask-help': 'red', 'call-staff': 'blue'}
 out_data: List[Dict[str, float]] = []
@@ -43,6 +45,17 @@ def process_csv(file, strat_name):
     metrics: Dict[str, List[float]] = {}
     titles: List[str] = []
     seeds_with_time: Dict[str, Dict[str, Any]] = {}
+    gambit_times: Dict[str, float] = {}
+
+    try:
+        with open(CSV_PATH + '/gambit_' + file) as gambit_file:
+            reader = csv.reader(gambit_file)
+            for i, row in enumerate(reader):
+                if i == 0:
+                    continue
+                gambit_times[row[4]] = float(row[1])
+    except FileNotFoundError:
+        pass
 
     with open(CSV_PATH + '/' + file) as csvfile:
         reader = csv.reader(csvfile)
@@ -51,16 +64,26 @@ def process_csv(file, strat_name):
                 for key in row[2:]:
                     metrics[key] = []
                     titles.append(key)
+                if len(gambit_times) > 0:
+                    metrics[gambit_metric] = []
+                    for miss in missing_gambit_metrics:
+                        metrics[miss] = []
             else:
                 seeds_with_time[row[1]] = {'strategy_name': strat_name}
                 # if count_decisions(row[1]) < 3:  # if the robot makes less than 3 decisions
                 #    continue
+
                 for j, value in enumerate(row[2:]):
                     try:
                         metrics[titles[j]].append(float(value))
                         seeds_with_time[row[1]][titles[j]] = float(value)
                     except ValueError:
                         pass
+
+                if row[1] in gambit_times:
+                    metrics[gambit_metric].append(gambit_times[row[1]])
+                    for miss in missing_gambit_metrics:
+                        metrics[miss].append(0.0)
 
     def get_metric(x):
         try:
@@ -76,6 +99,8 @@ def process_csv(file, strat_name):
 exp_metrics: Dict[str, List[Tuple[int, int, Dict[str, float]]]] = {}
 evac_times: Dict[str, Dict[str, Any]] = {}
 
+add_prefix = '_rvar_0.5_50'
+
 for file in tqdm(os.listdir(CSV_PATH)):
     if file.startswith(csv_prefix):
         fields = file.replace(csv_prefix, '').split('_')
@@ -90,7 +115,7 @@ for file in tqdm(os.listdir(CSV_PATH)):
 for key in exp_metrics:
     exp_metrics[key].sort(key=get_fall_length)
 
-configurations = ['no-support', 'staff-support', 'passenger-support', 'adaptive-support']
+configurations = ['no-support', 'staff-support', 'passenger-support', 'adaptive-support', 'gambit-support']
 metrics_keys = ['evacuation_time', 'victims', 'staff_requests']
 
 aggregate_score = False
