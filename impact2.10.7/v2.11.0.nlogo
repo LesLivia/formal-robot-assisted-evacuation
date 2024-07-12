@@ -137,6 +137,7 @@ globals [; GLOBALS
          STAFF_HELP_FACTOR
          STAFF_CALLS
          N_PASSENGERS
+         N_NORMAL_STAFF
          N_STAFF
          PASSENGER_HELP_FACTOR
          ROBOT_REQUEST_BONUS
@@ -270,8 +271,8 @@ to setup
   setup-seed
 
   set number_passengers N_PASSENGERS
-  set _number_normal_staff_members N_STAFF
-  set _number_staff_members 0
+  set _number_normal_staff_members N_NORMAL_STAFF
+  set _number_staff_members N_STAFF
   random-seed starting-seed
 
   set list_exits []
@@ -1315,8 +1316,14 @@ to prepare-new-search
   ; For the SAR robot, to prepare to locate a new passanger to help.
 
   set victim-found nobody
-  set candidate-helper nobody
+  if candidate-helper != nobody [
+    ask candidate-helper [
+      set color previous-color
+    ]
+    set candidate-helper nobody
+  ]
 
+  set color SAR_ROBOT_COLOR
   set support-strategy get-support-strategy
 end
 
@@ -1679,6 +1686,7 @@ to place-staff-random
         set assistance-required nobody
         set help-factor STAFF_HELP_FACTOR
         set color STAFF_COLOR
+        set previous-color STAFF_COLOR
         set shape "person"
         move-to one-of patches with [ (pcolor = white or pcolor = orange) and count agents-here < 8 ]
     ]
@@ -1689,6 +1697,7 @@ to place-staff-random
         set assistance-required nobody
         set help-factor STAFF_HELP_FACTOR
         set color STAFF_COLOR
+        set previous-color STAFF_COLOR
         set shape "person"
         move-to one-of patches with [ (pcolor = white or pcolor = orange) and count agents-here < 8 ]
     ]
@@ -2505,7 +2514,7 @@ number_passengers
 number_passengers
 1
 6743
-485
+623
 1
 1
 NIL
@@ -2578,7 +2587,7 @@ _number_staff_members
 _number_staff_members
 0
 64
-0
+19
 1
 1
 NIL
@@ -2881,7 +2890,7 @@ _number_normal_staff_members
 _number_normal_staff_members
 0
 64
-8
+1
 1
 1
 NIL
