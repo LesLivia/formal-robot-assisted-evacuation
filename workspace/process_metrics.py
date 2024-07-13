@@ -70,7 +70,7 @@ def process_csv(file, strat_name):
                         metrics[miss] = []
             else:
                 seeds_with_time[row[1]] = {'strategy_name': strat_name}
-                # if count_decisions(row[1]) < 3:  # if the robot makes less than 3 decisions
+                # if count_decisions(row[1]) < 1:  # if the robot makes less than 3 decisions
                 #    continue
 
                 for j, value in enumerate(row[2:]):
