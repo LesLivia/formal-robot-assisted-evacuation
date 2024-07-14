@@ -162,6 +162,8 @@ for key in exp_metrics:
                     row += '{:.1f}\t\t\t'.format(length_value[2][conf + '_' + metric_key])
                 except TypeError:
                     row += 'None\t\t\t'
+                except KeyError:
+                    row += 'None\t\t\t'
             print(row)
 
 plot = True
