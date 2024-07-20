@@ -193,6 +193,8 @@ staff-own [
   danger
   help-factor
   previous-color
+  ticks-since-move-to-help
+  robot-asked
 ]
 
 ; Agent variables for the sar-robot agents.
@@ -209,6 +211,8 @@ sar-robots-own [
 agents-own [
   nearest_exit_target speed speed_bkp
   ticks-since-fall
+  ticks-since-move-to-help
+  robot-asked
   fall-length
   help-factor
   help-bonus
@@ -433,6 +437,8 @@ to setup
   ]
   ask agents [
     set ticks-since-fall 0
+    set ticks-since-move-to-help 0
+    set robot-asked FALSE
     set fall-length DEFAULT_FALL_LENGTH
     set help-factor PASSENGER_HELP_FACTOR
     set help-bonus 0
@@ -1083,14 +1089,15 @@ end
 to move-agent
   ;nw
   let stops_to_help? FALSE
+  let increase_ticks? FALSE
   ask link-neighbors [                             ;this is the mechanism for when a group member falls: you do 'nothing'until this person stands up
     if st_fall = 1 [set stops_to_help? TRUE]
   ]
   if agent_to_help != nobody [                     ;this is the mechanism for when a non-group member falls that you want to help: when fallen, do nothing, when he/she stands up, you and your group members pick up the old speed
     ask agent_to_help [
-
       ifelse st_fall = 1 [
         set stops_to_help? TRUE ; if the person still needs help, it continues stoped to help him.
+        set increase_ticks? TRUE
       ][
         set agent_to_help nobody ; if the person is already ok, he continues his path, and removes from his mind the intention to help that person.
         set speed speed_bkp
@@ -1100,6 +1107,10 @@ to move-agent
       ]
     ]
   ]
+  if increase_ticks? = TRUE [
+    set ticks-since-move-to-help (ticks-since-move-to-help + 1)
+  ]
+
   if stops_to_help? = TRUE [stop]
 
   ; avoid passenger be stuck at same position between wall and fire
@@ -1288,6 +1299,7 @@ to request-staff-support
       set assistance-required target-victim
       set previous-color color
       set color STAFF_SUPPORT_COLOR
+      set robot-asked TRUE
     ]
 
     ; TODO Remove later
@@ -1364,6 +1376,14 @@ end
 
 to bystander-support-done
   ; For a helping bystander, to clear its related helping information
+  if robot-asked [
+    if agent_to_help != nobody [
+      file-open "verification.txt"
+      file-print (word starting-seed " " ticks " zero-responder " who " rescuing " agent_to_help " for " ticks-since-move-to-help " at " speed_bkp)
+      file-close
+    ]
+    set robot-asked FALSE
+  ]
   set help-bonus 0
   set agent_to_help nobody
   set color previous-color
@@ -1403,11 +1423,11 @@ to request-passanger-help
     set bystander-requests (bystander-requests + 1)
 
     ask candidate-helper [
-
       set agent_to_help selected_fallen_person
       set help-bonus ROBOT_REQUEST_BONUS
       set previous-color color
       set color BYSTANDER_SUPPORT_COLOR
+      set robot-asked TRUE
 
       log-turtle "Assigning agent to help:" selected_fallen_person
 
@@ -1485,7 +1505,14 @@ to check-staff-request-for-support
   ; For the staff, to check if there's a SAR robot request for helping a passanger.
 
   if passenger-recovered? assistance-required [
+   if robot-asked [
+     file-open "verification.txt"
+     file-print (word starting-seed " " ticks " first-responder " who " rescuing " assistance-required " for " ticks-since-move-to-help)
+     file-close
+   ]
    ; Cancelling since victim not in need
+   set robot-asked FALSE
+   set ticks-since-move-to-help 0
    set assistance-required nobody
    set color previous-color
    stop
@@ -1504,6 +1531,8 @@ to check-staff-request-for-support
   ][
     ; TODO remove later.
     log-turtle "Staff approaching to support. Victim " assistance-required
+
+    set ticks-since-move-to-help (ticks-since-move-to-help + 1)
 
     ; Still far, approach to victim
     approach-agent assistance-required
@@ -1588,12 +1617,11 @@ to-report request-candidate-help?
   ; user-message (word "Params: " helper-fallen-distance staff-fallen-distance)
   ; user-message (word "Params: " staff-fallen-distance)
 
-
-
   ; Calling the adaptive controller using Python
   let controller-response (shell:exec (item 0 CONTROLLER_PYTHON_COMMAND)
     CONTROLLER_PYTHON_SCRIPT simulation-id helper-gender helper-culture helper-age fallen-gender fallen-culture
     fallen-age helper-fallen-distance staff-fallen-distance)
+  set controller-response butlast controller-response
 
   log-turtle "staff-fallen-distance " staff-fallen-distance
   log-turtle "helper-fallen-distance " helper-fallen-distance
@@ -1611,10 +1639,10 @@ to-report request-candidate-help?
 
   file-open "out.txt"
   file-print (word number_passengers " " _number_normal_staff_members " " starting-seed " " helper-gender " " helper-culture " " helper-age " "
-    fallen-gender " " fallen-culture " " fallen-age " " helper-fallen-distance " " staff-fallen-distance " " controller-response )
+    fallen-gender " " fallen-culture " " fallen-age " " helper-fallen-distance " " staff-fallen-distance " " the-victim " " the-helper " " ticks " " controller-response)
   file-close
 
-  user-message word "Decision: " controller-response
+  ; user-message word "Decision: " controller-response
 
   report result
 
@@ -1684,6 +1712,8 @@ to place-staff-random
         set skill_convince_others _staff_skill
         set target-patch nobody
         set assistance-required nobody
+        set robot-asked FALSE
+        set ticks-since-move-to-help 0
         set help-factor STAFF_HELP_FACTOR
         set color STAFF_COLOR
         set previous-color STAFF_COLOR
@@ -1695,6 +1725,8 @@ to place-staff-random
         set skill_convince_others _normal_staff_skill
         set target-patch nobody
         set assistance-required nobody
+        set robot-asked FALSE
+        set ticks-since-move-to-help 0
         set help-factor STAFF_HELP_FACTOR
         set color STAFF_COLOR
         set previous-color STAFF_COLOR
@@ -1850,12 +1882,8 @@ to-report offer-help? [passenger selected_fallen_person]
   report result
 end
 
-
-
-
 to start-helping
   ; For a helping passanger, to approach the agent they will help.
-
   move-to [patch-here] of agent_to_help
   set speed 0
   ask link-neighbors [set speed 0]
@@ -2514,7 +2542,7 @@ number_passengers
 number_passengers
 1
 6743
-623
+500
 1
 1
 NIL
@@ -2563,7 +2591,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-1
+0
 1
 -1000
 
@@ -2574,7 +2602,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-1
+0
 1
 -1000
 
@@ -2587,7 +2615,7 @@ _number_staff_members
 _number_staff_members
 0
 64
-19
+3
 1
 1
 NIL
@@ -2831,7 +2859,7 @@ _percentage_eldery
 _percentage_eldery
 0
 100
-15
+1
 1
 1
 NIL
