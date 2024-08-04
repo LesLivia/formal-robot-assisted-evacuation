@@ -1089,7 +1089,6 @@ end
 to move-agent
   ;nw
   let stops_to_help? FALSE
-  let increase_ticks? FALSE
   ask link-neighbors [                             ;this is the mechanism for when a group member falls: you do 'nothing'until this person stands up
     if st_fall = 1 [set stops_to_help? TRUE]
   ]
@@ -1097,7 +1096,6 @@ to move-agent
     ask agent_to_help [
       ifelse st_fall = 1 [
         set stops_to_help? TRUE ; if the person still needs help, it continues stoped to help him.
-        set increase_ticks? TRUE
       ][
         set agent_to_help nobody ; if the person is already ok, he continues his path, and removes from his mind the intention to help that person.
         set speed speed_bkp
@@ -1107,11 +1105,29 @@ to move-agent
       ]
     ]
   ]
-  if increase_ticks? = TRUE [
-    set ticks-since-move-to-help (ticks-since-move-to-help + 1)
-  ]
 
-  if stops_to_help? = TRUE [stop]
+  if stops_to_help? = TRUE and agent_to_help != nobody [
+      ifelse distance agent_to_help < OBSERVATION_DISTANCE [
+        ; Victim in proximity
+        move-to [patch-here] of agent_to_help
+
+        if robot-asked and agent_to_help != nobody [
+            file-open "verification.txt"
+            file-print (word starting-seed " " ticks " zero-responder " who " approached " agent_to_help " in " (ticks - ticks-since-move-to-help) " at " speed_bkp)
+            file-close
+          ]
+        set robot-asked FALSE
+        set ticks-since-move-to-help 0
+
+        log-turtle "Providing bystander support. Victim" agent_to_help
+        stop
+      ][
+        log-turtle "Bystander approaching to support. Victim " agent_to_help
+
+        ; Still far, approach to victim
+        approach-agent agent_to_help
+      ]
+    ]
 
   ; avoid passenger be stuck at same position between wall and fire
   ifelse count_time_stoped_same_position > 10 [
@@ -1289,10 +1305,12 @@ to request-staff-support
      stop
   ]
 
-  let target-victim  victim-found
+  let target-victim victim-found
   let nearest-staff-member get-nearest-staff-member
 
   ifelse nearest-staff-member != nobody [
+
+    let staff-fallen-distance (word " ")
 
     ; Calling nearest staff member
     ask nearest-staff-member [
@@ -1300,10 +1318,16 @@ to request-staff-support
       set previous-color color
       set color STAFF_SUPPORT_COLOR
       set robot-asked TRUE
+      set ticks-since-move-to-help ticks
+      set staff-fallen-distance (distance target-victim)
     ]
 
     ; TODO Remove later
     log-turtle "Staff contacted:" nearest-staff-member
+
+    file-open "verification.txt"
+    file-print (word starting-seed " " ticks " (FR) " nearest-staff-member " agreed to help " target-victim " from " (staff-fallen-distance - OBSERVATION_DISTANCE) )
+    file-close
 
     set staff-requests (staff-requests + 1)
     set STAFF_CALLS (STAFF_CALLS + 1)
@@ -1312,7 +1336,6 @@ to request-staff-support
     ; No staff available for help. Waiting.
     log-turtle "No staff available. Victim waiting: " target-victim
   ]
-
 
 end
 
@@ -1376,14 +1399,6 @@ end
 
 to bystander-support-done
   ; For a helping bystander, to clear its related helping information
-  if robot-asked [
-    if agent_to_help != nobody [
-      file-open "verification.txt"
-      file-print (word starting-seed " " ticks " zero-responder " who " rescuing " agent_to_help " for " ticks-since-move-to-help " at " speed_bkp)
-      file-close
-    ]
-    set robot-asked FALSE
-  ]
   set help-bonus 0
   set agent_to_help nobody
   set color previous-color
@@ -1422,12 +1437,22 @@ to request-passanger-help
     log-turtle "Agreed to help. Bystander:" candidate-helper
     set bystander-requests (bystander-requests + 1)
 
+    let helper-fallen-distance (word " ")
+    ask candidate-helper [
+       set helper-fallen-distance (distance selected_fallen_person)
+    ]
+
+    file-open "verification.txt"
+    file-print (word starting-seed " " ticks " (ZR) " candidate-helper " agreed to help " selected_fallen_person " from " (helper-fallen-distance - OBSERVATION_DISTANCE) )
+    file-close
+
     ask candidate-helper [
       set agent_to_help selected_fallen_person
       set help-bonus ROBOT_REQUEST_BONUS
       set previous-color color
       set color BYSTANDER_SUPPORT_COLOR
       set robot-asked TRUE
+      set ticks-since-move-to-help ticks
 
       log-turtle "Assigning agent to help:" selected_fallen_person
 
@@ -1505,14 +1530,6 @@ to check-staff-request-for-support
   ; For the staff, to check if there's a SAR robot request for helping a passanger.
 
   if passenger-recovered? assistance-required [
-   if robot-asked [
-     file-open "verification.txt"
-     file-print (word starting-seed " " ticks " first-responder " who " rescuing " assistance-required " for " ticks-since-move-to-help)
-     file-close
-   ]
-   ; Cancelling since victim not in need
-   set robot-asked FALSE
-   set ticks-since-move-to-help 0
    set assistance-required nobody
    set color previous-color
    stop
@@ -1521,6 +1538,15 @@ to check-staff-request-for-support
   ifelse distance assistance-required < OBSERVATION_DISTANCE [
     ; Victim in proximity
     move-to [patch-here] of assistance-required
+
+    if robot-asked [
+      file-open "verification.txt"
+      file-print (word starting-seed " " ticks " first-responder " who " approached " assistance-required " in " (ticks - ticks-since-move-to-help))
+      file-close
+    ]
+    ; Cancelling since victim not in need
+    set robot-asked FALSE
+    set ticks-since-move-to-help 0
 
     ; TODO Remove later
     log-turtle "Providing staff support. Victim" assistance-required
@@ -1532,7 +1558,7 @@ to check-staff-request-for-support
     ; TODO remove later.
     log-turtle "Staff approaching to support. Victim " assistance-required
 
-    set ticks-since-move-to-help (ticks-since-move-to-help + 1)
+    ; set ticks-since-move-to-help (ticks-since-move-to-help + 1)
 
     ; Still far, approach to victim
     approach-agent assistance-required
@@ -1627,6 +1653,11 @@ to-report request-candidate-help?
   log-turtle "helper-fallen-distance " helper-fallen-distance
   log-turtle "Response from controller " controller-response
 
+  file-open "out.txt"
+  file-print (word number_passengers " " _number_normal_staff_members " " starting-seed " " helper-gender " " helper-culture " " helper-age " "
+    fallen-gender " " fallen-culture " " fallen-age " " helper-fallen-distance " " staff-fallen-distance " " the-victim " " the-helper " " ticks " " controller-response)
+  file-close
+
   let result FALSE
 
   if member? "ERROR" controller-response [
@@ -1636,11 +1667,6 @@ to-report request-candidate-help?
   if member? "ask-help" controller-response [
     set result TRUE
   ]
-
-  file-open "out.txt"
-  file-print (word number_passengers " " _number_normal_staff_members " " starting-seed " " helper-gender " " helper-culture " " helper-age " "
-    fallen-gender " " fallen-culture " " fallen-age " " helper-fallen-distance " " staff-fallen-distance " " the-victim " " the-helper " " ticks " " controller-response)
-  file-close
 
   ; user-message word "Decision: " controller-response
 
@@ -1883,10 +1909,21 @@ to-report offer-help? [passenger selected_fallen_person]
 end
 
 to start-helping
+  if robot-asked = TRUE [
+    ; user-message (word "starting at" ticks)
+  ]
+
   ; For a helping passanger, to approach the agent they will help.
-  move-to [patch-here] of agent_to_help
-  set speed 0
-  ask link-neighbors [set speed 0]
+  ; move-to [patch-here] of agent_to_help
+  ; approach-agent agent_to_help
+
+  ; if robot-asked = TRUE [
+  ;  user-message (word ticks " " speed)
+  ;  set ticks-since-move-to-help ticks - ticks-since-move-to-help
+  ; ]
+
+  ; set speed 0
+  ; ask link-neighbors [set speed 0]
 end
 
 to check-decide-to-help ;nw
@@ -2542,7 +2579,7 @@ number_passengers
 number_passengers
 1
 6743
-500
+700
 1
 1
 NIL
@@ -2615,7 +2652,7 @@ _number_staff_members
 _number_staff_members
 0
 64
-3
+1
 1
 1
 NIL
