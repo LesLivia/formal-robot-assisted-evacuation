@@ -1107,7 +1107,7 @@ to move-agent
   ]
 
   if stops_to_help? = TRUE and agent_to_help != nobody [
-      ifelse distance agent_to_help < OBSERVATION_DISTANCE [
+      ifelse distance agent_to_help <= 1 [
         ; Victim in proximity
         move-to [patch-here] of agent_to_help
 
@@ -1326,7 +1326,7 @@ to request-staff-support
     log-turtle "Staff contacted:" nearest-staff-member
 
     file-open "verification.txt"
-    file-print (word starting-seed " " ticks " (FR) " nearest-staff-member " agreed to help " target-victim " from " (staff-fallen-distance - OBSERVATION_DISTANCE) )
+    file-print (word starting-seed " " ticks " (FR) " nearest-staff-member " agreed to help " target-victim " from " staff-fallen-distance)
     file-close
 
     set staff-requests (staff-requests + 1)
@@ -1443,7 +1443,7 @@ to request-passanger-help
     ]
 
     file-open "verification.txt"
-    file-print (word starting-seed " " ticks " (ZR) " candidate-helper " agreed to help " selected_fallen_person " from " (helper-fallen-distance - OBSERVATION_DISTANCE) )
+    file-print (word starting-seed " " ticks " (ZR) " candidate-helper " agreed to help " selected_fallen_person " from " helper-fallen-distance)
     file-close
 
     ask candidate-helper [
@@ -1535,7 +1535,7 @@ to check-staff-request-for-support
    stop
   ]
 
-  ifelse distance assistance-required < OBSERVATION_DISTANCE [
+  ifelse distance assistance-required <= 1 [
     ; Victim in proximity
     move-to [patch-here] of assistance-required
 
@@ -2579,7 +2579,7 @@ number_passengers
 number_passengers
 1
 6743
-700
+400
 1
 1
 NIL
@@ -2628,7 +2628,7 @@ SWITCH
 108
 _fire_alarm
 _fire_alarm
-0
+1
 1
 -1000
 
@@ -2639,7 +2639,7 @@ SWITCH
 140
 _public_announcement
 _public_announcement
-0
+1
 1
 -1000
 
