@@ -1,0 +1,27 @@
+{
+  "strat_name": "EndOptR",
+  "property": "s1.__end__ or s2.__end__",
+  "n_survivors": 2,
+  "pi_survivors": {
+    "s1": [
+      0,
+      0,
+      0
+    ]
+  },
+  "n_victims": 1,
+  "pi_victims": {
+    "v1": [
+      0,
+      0,
+      0
+    ],
+    "v2": [
+      1,
+      1,
+      1
+    ]
+  },
+  "plot_dim_1": 4,
+  "plot_dim_2": 5
+}

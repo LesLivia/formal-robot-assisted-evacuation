@@ -5,7 +5,7 @@
     <declaration>hybrid clock s_payoff = 0;
         hybrid clock r_payoff = 0;
 
-        const int N_V = 2;
+        const int N_V = **N_V**;
         broadcast chan help_victim[N_V], contact_first_responder;
 
         hybrid clock t;
@@ -13,13 +13,13 @@
         const int N_PI = 3;
         const int FR_SPEED = 1;
         // helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age
-        const int PI_S[N_PI] = {0, 0, 0};
-        const int D_V[N_V] = {2, 10};
-        const int PI_V[N_V][N_PI] = {{0, 0, 0}, {1, 1, 1}};
+        const int PI_S[N_PI] = **PI_S**;
+        const int D_V[N_V] = {**D_V1**, **D_V2**};
+        const int PI_V[N_V][N_PI] = **PI_V**;
 
         int agent_to_help=-1;
 
-        const int TAU = 50;
+        const int TAU = **TB**;
         hybrid clock evac_time = TAU;
     </declaration>
     <template>
@@ -279,25 +279,17 @@
     <system>r = Robot();
 
         // Rationality Degree: 1.0 -&gt; Perfectly Rational Agent, 0.0 -&gt; Perfectly Irrational Agent
-        s = Survivor(0, 1, 5);
+        s = Survivor(0, **SPEED_S1**, **D_FR**);
 
         system r,s;
     </system>
     <queries>
         <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==0)</formula>
+            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==1 and s.__end__)</formula>
             <comment/>
         </query>
         <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==1)</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU]([] agent_to_help==-1)</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: r_payoff)</formula>
+            <formula>E[&lt;=TAU;10000](max: r_payoff)</formula>
             <comment/>
         </query>
         <query>
@@ -305,19 +297,11 @@
             <comment/>
         </query>
         <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==0) under EndOptR</formula>
+            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==1 and s.__end__) under EndOptR</formula>
             <comment/>
         </query>
         <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==1) under EndOptR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU]([] agent_to_help==-1) under EndOptR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: r_payoff) under EndOptR</formula>
+            <formula>E[&lt;=TAU;10000](max: r_payoff) under EndOptR</formula>
             <comment/>
         </query>
         <query>
@@ -327,19 +311,11 @@
             <comment/>
         </query>
         <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==0) under RescueChild</formula>
+            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==1 and s.__end__) under RescueChild</formula>
             <comment/>
         </query>
         <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; agent_to_help==1) under RescueChild</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU]([] agent_to_help==-1) under RescueChild</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: r_payoff) under RescueChild</formula>
+            <formula>E[&lt;=TAU;10000](max: r_payoff) under RescueChild</formula>
             <comment/>
         </query>
     </queries>

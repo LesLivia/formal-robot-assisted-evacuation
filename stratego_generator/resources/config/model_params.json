@@ -17,6 +17,12 @@
     "min": 1,
     "max": 20
   },
+  "dist_v": {
+    "key": "**D_V{}**",
+    "type": "int",
+    "min": 1,
+    "max": 20
+  },
   "dist_fr": {
     "key": "**D_FR**",
     "type": "int",
