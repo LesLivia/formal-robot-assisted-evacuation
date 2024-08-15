@@ -8,12 +8,18 @@ broadcast chan help_victim, contact_first_responder;
 
 hybrid clock t;
 
+const int N_PI = 3;
+const int FR_SPEED = 1;
+// helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age
+const int PI_V[N_PI] = {0, 0, 0};
+const int PI_S[N_PI] = {0, 0, 0};
+
 const int TAU = **TIME_BOUND**;
 hybrid clock evac_time = TAU;
 </declaration>
 	<template>
 		<name x="5" y="5">Survivor</name>
-		<parameter>double r, meta int speed, meta int dv, meta int dfr</parameter>
+		<parameter>const int pi, const double r, const int speed, const int dv, const int dfr</parameter>
 		<declaration>meta int dist = 0;
 
 void set(double r, double s, bool update_time) {
@@ -129,13 +135,13 @@ t&lt;=dist/speed</label>
 			<source ref="id12"/>
 			<target ref="id10"/>
 			<label kind="assignment" x="-136" y="-535">t=0</label>
-			<label kind="probability" x="-136" y="-552">1-r</label>
+			<label kind="probability" x="-136" y="-552">(1-r)*pi</label>
 		</transition>
 		<transition id="id23">
 			<source ref="id13"/>
 			<target ref="id11"/>
 			<label kind="assignment" x="-297" y="-544">t=0</label>
-			<label kind="probability" x="-297" y="-561">1-r</label>
+			<label kind="probability" x="-297" y="-561">(1-r)*pi</label>
 		</transition>
 		<transition id="id24" controllable="false">
 			<source ref="id9"/>
@@ -148,7 +154,7 @@ t&lt;=dist/speed</label>
 			<source ref="id14"/>
 			<target ref="id9"/>
 			<label kind="assignment" x="-450" y="-552">t=0</label>
-			<label kind="probability" x="-416" y="-561">r</label>
+			<label kind="probability" x="-416" y="-561">r*pi</label>
 		</transition>
 		<transition id="id26" controllable="false">
 			<source ref="id8"/>
@@ -161,7 +167,7 @@ t&lt;=dist/speed</label>
 			<source ref="id15"/>
 			<target ref="id8"/>
 			<label kind="assignment" x="-612" y="-552">t=0</label>
-			<label kind="probability" x="-578" y="-561">r</label>
+			<label kind="probability" x="-578" y="-561">r*pi</label>
 		</transition>
 		<transition id="id28" controllable="false">
 			<source ref="id0"/>
@@ -175,7 +181,7 @@ t&lt;=dist/speed</label>
 			<source ref="id12"/>
 			<target ref="id5"/>
 			<label kind="assignment" x="-51" y="-433">set(2.6, 1.1, 0)</label>
-			<label kind="probability" x="-42" y="-450">r</label>
+			<label kind="probability" x="-42" y="-450">r*fabs(N_PI-pi)</label>
 			<nail x="0" y="-391"/>
 		</transition>
 		<transition id="id31" controllable="false">
@@ -186,7 +192,7 @@ t&lt;=dist/speed</label>
 			<source ref="id13"/>
 			<target ref="id5"/>
 			<label kind="assignment" x="-212" y="-484">set(2.2, 1.3, 0)</label>
-			<label kind="probability" x="-195" y="-476">r</label>
+			<label kind="probability" x="-195" y="-476">r*fabs(N_PI-pi)</label>
 			<nail x="-161" y="-493"/>
 		</transition>
 		<transition id="id33" controllable="false">
@@ -197,7 +203,7 @@ t&lt;=dist/speed</label>
 			<source ref="id14"/>
 			<target ref="id5"/>
 			<label kind="assignment" x="-408" y="-493">set(2.6, 0.5, 0)</label>
-			<label kind="probability" x="-382" y="-510">1-r</label>
+			<label kind="probability" x="-382" y="-510">(1-r)*fabs(N_PI-pi)</label>
 		</transition>
 		<transition id="id35" controllable="false">
 			<source ref="id2"/>
@@ -207,7 +213,7 @@ t&lt;=dist/speed</label>
 			<source ref="id15"/>
 			<target ref="id5"/>
 			<label kind="assignment" x="-629" y="-442">set(2.2, 0.7, 0)</label>
-			<label kind="probability" x="-612" y="-467">1-r</label>
+			<label kind="probability" x="-612" y="-467">(1-r)*fabs(N_PI-pi)</label>
 			<nail x="-629" y="-416"/>
 		</transition>
 		<transition id="id37" controllable="false">
@@ -240,11 +246,24 @@ t&lt;=dist/speed</label>
 	</template>
 	<system>r = Robot();
 
+int get_pi(int id) {
+    int i, res = 1;
+    for(i=0; i&lt;N_PI; i++) 
+        if (PI_S[id][i]==PI_V[i])
+            res = res + 1;
+    
+    return res;
+}
+
 // Rationality Degree: 1.0 -&gt; Perfectly Rational Agent, 0.0 -&gt; Perfectly Irrational Agent
-s = Survivor(**RAT_DEG**, **SPEED**, **VICTIM_DIST**, **FR_DIST**);
+s = Survivor(get_pi(0), **RAT_DEG**, **SPEED**, **VICTIM_DIST**, **FR_DIST**);
 
 system r,s;
 </system>
 	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
 	</queries>
 </nta>
