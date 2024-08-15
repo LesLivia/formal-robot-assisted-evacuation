@@ -14,7 +14,7 @@ class Design_Parameter:
 
 
 STEP_FLOAT = 0.5
-STEP_INT = 2
+STEP_INT = 10
 
 
 def get_permutations(params: List[Design_Parameter], fixed_params: Dict[str, Union[float, int]]):

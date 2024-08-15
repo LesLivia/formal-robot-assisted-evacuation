@@ -1,407 +1,394 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN'
-        'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
 <nta>
-    <declaration>hybrid clock s_payoff = 0;
-        hybrid clock r_payoff = 0;
-        hybrid clock fr_usage = 0;
+	<declaration>hybrid clock s_payoff = 0;
+hybrid clock r_payoff = 0;
+hybrid clock fr_usage = 0;
 
-        const int N_V = 5;
-        int curr_v = 0;
-        int count_zr = 0;
-        int count_fr = 0;
+const int N_V = **N_V**;
+int curr_v = 0;
+int count_zr = 0;
+int count_fr = 0;
 
-        broadcast chan help_victim, contact_first_responder;
-        broadcast chan new;
+broadcast chan help_victim, contact_first_responder;
+broadcast chan new;
 
-        hybrid clock t;
+hybrid clock t;
 
-        const int N_PI = 3;
-        const int FR_SPEED = 1;
-        // helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age
-        const int PI_S[N_PI] = {0, 0, 0};
-        const int D_V[N_V] = {4, 10, 17, 5, 9};
-        const int D_FR[N_V] = {2, 20, 1, 18, 13};
-        const int PI_V[N_V][N_PI] = {{0, 1, 0}, {2, 1, 0}, {2, 1, 0}, {1, 1, 3}, {3, 2, 1}};
+const int N_PI = 3;
+const int FR_SPEED = 1;
+// helper-gender helper-culture helper-age fallen-gender fallen-culture fallen-age
+const int PI_S[N_V][N_PI] = **PI_S**;
+const int D_V[N_V] = {**D_V1**, **D_V2**, **D_V3**, **D_V4**, **D_V5**};
+const int D_FR[N_V] = {**D_FR**, **D_FR**, **D_FR**, **D_FR**, **D_FR**};
+const int PI_V[N_V][N_PI] = **PI_V**;
 
-        const int TAU = 30;
-        hybrid clock evac_time = TAU;
-    </declaration>
-    <template>
-        <name x="5" y="5">Survivor</name>
-        <parameter>meta int id, meta int speed, meta bool rat_or_pi</parameter>
-        <declaration>meta int dist = 0, dv, dfr;
-            double r;
+int get_pi(int id) {
+    int i, res = 1;
+    if (id&gt;=N_V) return 0;
 
-            void set_r(int i_v) {
-            int i, count=0;
-            for (i=0;i&lt;N_PI;i++)
-            if(PI_S[i] == PI_V[i_v][i]) count++;
-            if (rat_or_pi) r = 1.0;
-            else r = count/N_PI;
-            }
+    for(i=0; i&lt;N_PI; i++) 
+        if (PI_S[id][i]==PI_V[id][i])
+            res = res + 1;
+    
+    return res;
+}
 
-            void set(double r, double s, bool update_time, bool use_fr) {
-            r_payoff = r_payoff + r;
-            s_payoff = s_payoff + s;
-            if (update_time) evac_time = t;
-            if (use_fr) fr_usage = fr_usage + 1;
-            else evac_time = 0;
-            }
-        </declaration>
-        <location id="id0" x="-331" y="-850">
-            <name x="-365" y="-884">__init__</name>
-            <committed/>
-        </location>
-        <location id="id1" x="-535" y="-603">
-            <name x="-594" y="-611">R_N_G</name>
-            <committed/>
-        </location>
-        <location id="id2" x="-382" y="-603">
-            <name x="-441" y="-611">R_C_G</name>
-            <committed/>
-        </location>
-        <location id="id3" x="-263" y="-603">
-            <name x="-246" y="-612">R_N_P</name>
-            <committed/>
-        </location>
-        <location id="id4" x="-102" y="-603">
-            <name x="-85" y="-612">R_C_P</name>
-            <committed/>
-        </location>
-        <location id="id5" x="-323" y="-331">
-            <name x="-306" y="-340">__end__</name>
-            <label kind="invariant" x="-323" y="-322">s_payoff'==0 and
-                r_payoff'==0 and
-                fr_usage'==0 and
-                evac_time'==0 and
-                t'==0
-            </label>
-            <label kind="exponentialrate" x="-340" y="-323">1</label>
-        </location>
-        <location id="id6" x="-459" y="-765" color="#ffffff">
-            <name x="-469" y="-799">GI</name>
-        </location>
-        <location id="id7" x="-212" y="-765" color="#ffffff">
-            <name x="-222" y="-799">NOT_GI</name>
-        </location>
-        <location id="id8" x="-637" y="-501">
-            <name x="-705" y="-510">moving1</name>
-            <label kind="invariant" x="-765" y="-493">s_payoff'==0 and
-                r_payoff'==0 and
-                fr_usage'==0 and
-                evac_time'==0 and
-                t&lt;=dist/speed
-            </label>
-        </location>
-        <location id="id9" x="-476" y="-501">
-            <name x="-544" y="-510">moving2</name>
-            <label kind="invariant" x="-561" y="-493">s_payoff'==0 and
-                r_payoff'==0 and
-                fr_usage'==0 and
-                evac_time'==0 and
-                t&lt;=dist/speed
-            </label>
-        </location>
-        <location id="id10" x="-102" y="-501">
-            <name x="-85" y="-535">moving4</name>
-            <label kind="invariant" x="-85" y="-526">s_payoff'==0 and
-                r_payoff'==0 and
-                fr_usage'==0 and
-                evac_time'==0 and
-                t&lt;=dist/speed
-            </label>
-        </location>
-        <location id="id11" x="-289" y="-501">
-            <name x="-272" y="-527">moving3</name>
-            <label kind="invariant" x="-272" y="-510">s_payoff'==0 and
-                r_payoff'==0 and
-                fr_usage'==0 and
-                evac_time'==0 and
-                t&lt;=dist/speed
-            </label>
-        </location>
-        <branchpoint id="id12" x="-331" y="-799"/>
-        <branchpoint id="id13" x="-102" y="-561"/>
-        <branchpoint id="id14" x="-263" y="-561"/>
-        <branchpoint id="id15" x="-382" y="-561"/>
-        <branchpoint id="id16" x="-535" y="-561"/>
-        <init ref="id0"/>
-        <transition id="id17">
-            <source ref="id5"/>
-            <target ref="id0"/>
-            <label kind="synchronisation" x="-637" y="-246">new!</label>
-            <nail x="-323" y="-221"/>
-            <nail x="-799" y="-221"/>
-            <nail x="-799" y="-850"/>
-        </transition>
-        <transition id="id18">
-            <source ref="id12"/>
-            <target ref="id7"/>
-        </transition>
-        <transition id="id19">
-            <source ref="id12"/>
-            <target ref="id6"/>
-        </transition>
-        <transition id="id20" controllable="false">
-            <source ref="id0"/>
-            <target ref="id12"/>
-        </transition>
-        <transition id="id21">
-            <source ref="id7"/>
-            <target ref="id4"/>
-            <label kind="synchronisation" x="-136" y="-671">contact_first_responder?</label>
-            <label kind="assignment" x="-136" y="-731">dfr=D_FR[curr_v],
-                dist=dfr,
-                set_r(curr_v)
-            </label>
-        </transition>
-        <transition id="id22">
-            <source ref="id7"/>
-            <target ref="id3"/>
-            <label kind="synchronisation" x="-297" y="-697">help_victim?</label>
-            <label kind="assignment" x="-306" y="-680">dv = D_V[curr_v],
-                dist = dv,
-                set_r(curr_v)
-            </label>
-        </transition>
-        <transition id="id23">
-            <source ref="id6"/>
-            <target ref="id2"/>
-            <label kind="synchronisation" x="-459" y="-739">contact_first_responder?</label>
-            <label kind="assignment" x="-442" y="-722">dfr=D_FR[curr_v],
-                dist=dfr,
-                set_r(curr_v)
-            </label>
-        </transition>
-        <transition id="id24">
-            <source ref="id6"/>
-            <target ref="id1"/>
-            <label kind="synchronisation" x="-620" y="-714">help_victim?</label>
-            <label kind="assignment" x="-637" y="-697">dv = D_V[curr_v],
-                dist = dv,
-                set_r(curr_v)
-            </label>
-        </transition>
-        <transition id="id25" controllable="false">
-            <source ref="id11"/>
-            <target ref="id5"/>
-            <label kind="guard" x="-323" y="-459">t&gt;=dist/speed</label>
-            <label kind="assignment" x="-306" y="-442">set(dv/speed, -1.0, 1, 0)</label>
-        </transition>
-        <transition id="id26" controllable="false">
-            <source ref="id10"/>
-            <target ref="id5"/>
-            <label kind="guard" x="-229" y="-408">t&gt;=dist/speed</label>
-            <label kind="assignment" x="-246" y="-391">set(dfr/speed, -1.0, 1, 1)</label>
-            <nail x="-102" y="-425"/>
-        </transition>
-        <transition id="id27">
-            <source ref="id13"/>
-            <target ref="id10"/>
-            <label kind="assignment" x="-136" y="-535">t=0</label>
-            <label kind="probability" x="-136" y="-552">1-r</label>
-        </transition>
-        <transition id="id28">
-            <source ref="id14"/>
-            <target ref="id11"/>
-            <label kind="assignment" x="-297" y="-544">t=0</label>
-            <label kind="probability" x="-297" y="-561">1-r</label>
-        </transition>
-        <transition id="id29" controllable="false">
-            <source ref="id9"/>
-            <target ref="id5"/>
-            <label kind="guard" x="-467" y="-408">t&gt;=dist/speed</label>
-            <label kind="assignment" x="-459" y="-391">set(dfr/speed, 1.0, 1, 1)</label>
-            <nail x="-476" y="-442"/>
-        </transition>
-        <transition id="id30">
-            <source ref="id15"/>
-            <target ref="id9"/>
-            <label kind="assignment" x="-450" y="-552">t=0</label>
-            <label kind="probability" x="-416" y="-561">r</label>
-        </transition>
-        <transition id="id31" controllable="false">
-            <source ref="id8"/>
-            <target ref="id5"/>
-            <label kind="guard" x="-637" y="-357">t&gt;=dist/speed</label>
-            <label kind="assignment" x="-578" y="-340">set(dv/speed, 1.0, 1, 0)</label>
-            <nail x="-637" y="-374"/>
-        </transition>
-        <transition id="id32">
-            <source ref="id16"/>
-            <target ref="id8"/>
-            <label kind="assignment" x="-612" y="-552">t=0</label>
-            <label kind="probability" x="-578" y="-561">r</label>
-        </transition>
-        <transition id="id33">
-            <source ref="id13"/>
-            <target ref="id5"/>
-            <label kind="assignment" x="-51" y="-433">set(0.0, 1.0, 0, 0)</label>
-            <label kind="probability" x="-42" y="-450">r</label>
-            <nail x="0" y="-391"/>
-        </transition>
-        <transition id="id34" controllable="false">
-            <source ref="id4"/>
-            <target ref="id13"/>
-        </transition>
-        <transition id="id35">
-            <source ref="id14"/>
-            <target ref="id5"/>
-            <label kind="assignment" x="-212" y="-484">set(0.0, 1.0, 0, 0)</label>
-            <label kind="probability" x="-195" y="-476">r</label>
-            <nail x="-161" y="-493"/>
-        </transition>
-        <transition id="id36" controllable="false">
-            <source ref="id3"/>
-            <target ref="id14"/>
-        </transition>
-        <transition id="id37">
-            <source ref="id15"/>
-            <target ref="id5"/>
-            <label kind="assignment" x="-416" y="-493">set(0.0, -1.0, 0, 0)</label>
-            <label kind="probability" x="-382" y="-510">1-r</label>
-        </transition>
-        <transition id="id38" controllable="false">
-            <source ref="id2"/>
-            <target ref="id15"/>
-        </transition>
-        <transition id="id39">
-            <source ref="id16"/>
-            <target ref="id5"/>
-            <label kind="assignment" x="-629" y="-442">set(0.0, -1.0, 0, 0)</label>
-            <label kind="probability" x="-612" y="-467">1-r</label>
-            <nail x="-629" y="-416"/>
-        </transition>
-        <transition id="id40" controllable="false">
-            <source ref="id1"/>
-            <target ref="id16"/>
-        </transition>
-    </template>
-    <template>
-        <name>Robot</name>
-        <location id="id41" x="-272" y="0">
-            <name x="-331" y="-34">__init__</name>
-            <urgent/>
-        </location>
-        <location id="id42" x="-76" y="0">
-            <name x="-86" y="-34">__done__</name>
-        </location>
-        <location id="id43" x="-272" y="110">
-            <name x="-306" y="127">__end__</name>
-            <label kind="invariant" x="-246" y="110">s_payoff'==0 and
-                r_payoff'==0 and
-                fr_usage'==0 and
-                evac_time'==0 and
-                t'==0
-            </label>
-        </location>
-        <init ref="id41"/>
-        <transition id="id44">
-            <source ref="id41"/>
-            <target ref="id43"/>
-            <label kind="guard" x="-365" y="51">curr_v&gt;=N_V</label>
-        </transition>
-        <transition id="id45">
-            <source ref="id42"/>
-            <target ref="id41"/>
-            <label kind="synchronisation" x="-254" y="-136">new?</label>
-            <label kind="assignment" x="-254" y="-119">curr_v++</label>
-            <nail x="-76" y="-119"/>
-            <nail x="-272" y="-119"/>
-        </transition>
-        <transition id="id46">
-            <source ref="id41"/>
-            <target ref="id42"/>
-            <label kind="guard" x="-221" y="51">curr_v&lt;N_V</label>
-            <label kind="synchronisation" x="-272" y="34">contact_first_responder!</label>
-            <label kind="assignment" x="-221" y="68">count_fr+=1</label>
-            <nail x="-178" y="34"/>
-        </transition>
-        <transition id="id47">
-            <source ref="id41"/>
-            <target ref="id42"/>
-            <label kind="guard" x="-212" y="-76">curr_v&lt;N_V</label>
-            <label kind="synchronisation" x="-221" y="-59">help_victim!</label>
-            <label kind="assignment" x="-221" y="-42">count_zr+=1</label>
-            <nail x="-178" y="-42"/>
-        </transition>
-    </template>
-    <system>r = Robot();
+const int TAU = **TB**;
+hybrid clock evac_time = TAU;
+</declaration>
+	<template>
+		<name x="5" y="5">Survivor</name>
+		<parameter>meta int pi, const double r, const int speed</parameter>
+		<declaration>meta int dist = 0, dv, dfr;
 
-        // Rationality Degree: 1.0 -&gt; Perfectly Rational Agent, 0.0 -&gt; Perfectly Irrational Agent
-        s = Survivor(0, 1, 1);
+void set(double r, double s, bool update_time, bool use_fr) {
+    r_payoff = r_payoff + r;
+    s_payoff = s_payoff + s;
+    if (update_time) evac_time = t;
+    if (use_fr) fr_usage = fr_usage + 1;
+    else evac_time = 0;
+}</declaration>
+		<location id="id0" x="-331" y="-850">
+			<name x="-365" y="-884">__init__</name>
+			<committed/>
+		</location>
+		<location id="id1" x="-535" y="-603">
+			<name x="-594" y="-611">R_N_G</name>
+			<committed/>
+		</location>
+		<location id="id2" x="-382" y="-603">
+			<name x="-441" y="-611">R_C_G</name>
+			<committed/>
+		</location>
+		<location id="id3" x="-263" y="-603">
+			<name x="-246" y="-612">R_N_P</name>
+			<committed/>
+		</location>
+		<location id="id4" x="-102" y="-603">
+			<name x="-85" y="-612">R_C_P</name>
+			<committed/>
+		</location>
+		<location id="id5" x="-323" y="-331">
+			<name x="-306" y="-340">__end__</name>
+			<label kind="invariant" x="-323" y="-322">s_payoff'==0 and
+r_payoff'==0 and
+fr_usage'==0 and
+evac_time'==0 and
+t'==0</label>
+			<label kind="exponentialrate" x="-340" y="-323">1</label>
+		</location>
+		<location id="id6" x="-459" y="-765" color="#ffffff">
+			<name x="-469" y="-799">GI</name>
+		</location>
+		<location id="id7" x="-212" y="-765" color="#ffffff">
+			<name x="-222" y="-799">NOT_GI</name>
+		</location>
+		<location id="id8" x="-637" y="-501">
+			<name x="-705" y="-510">moving1</name>
+			<label kind="invariant" x="-765" y="-493">s_payoff'==0 and
+r_payoff'==0 and
+fr_usage'==0 and
+evac_time'==0 and
+t&lt;=dist/speed</label>
+		</location>
+		<location id="id9" x="-476" y="-501">
+			<name x="-544" y="-510">moving2</name>
+			<label kind="invariant" x="-561" y="-493">s_payoff'==0 and
+r_payoff'==0 and
+fr_usage'==0 and
+evac_time'==0 and
+t&lt;=dist/speed</label>
+		</location>
+		<location id="id10" x="-102" y="-501">
+			<name x="-85" y="-535">moving4</name>
+			<label kind="invariant" x="-85" y="-526">s_payoff'==0 and
+r_payoff'==0 and
+fr_usage'==0 and
+evac_time'==0 and
+t&lt;=dist/speed</label>
+		</location>
+		<location id="id11" x="-289" y="-501">
+			<name x="-272" y="-527">moving3</name>
+			<label kind="invariant" x="-272" y="-510">s_payoff'==0 and
+r_payoff'==0 and
+fr_usage'==0 and
+evac_time'==0 and
+t&lt;=dist/speed</label>
+		</location>
+		<branchpoint id="id12" x="-331" y="-799"/>
+		<branchpoint id="id13" x="-102" y="-561"/>
+		<branchpoint id="id14" x="-263" y="-561"/>
+		<branchpoint id="id15" x="-382" y="-561"/>
+		<branchpoint id="id16" x="-535" y="-561"/>
+		<init ref="id0"/>
+		<transition id="id17">
+			<source ref="id5"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-637" y="-246">new!</label>
+			<nail x="-323" y="-221"/>
+			<nail x="-799" y="-221"/>
+			<nail x="-799" y="-850"/>
+		</transition>
+		<transition id="id18">
+			<source ref="id12"/>
+			<target ref="id7"/>
+		</transition>
+		<transition id="id19">
+			<source ref="id12"/>
+			<target ref="id6"/>
+		</transition>
+		<transition id="id20" controllable="false">
+			<source ref="id0"/>
+			<target ref="id12"/>
+			<label kind="assignment" x="-323" y="-833">pi = get_pi(curr_v)</label>
+		</transition>
+		<transition id="id21">
+			<source ref="id7"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-153" y="-697">contact_first_responder?</label>
+			<label kind="assignment" x="-127" y="-680">dfr=D_FR[curr_v],
+dist=dfr</label>
+		</transition>
+		<transition id="id22">
+			<source ref="id7"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-297" y="-697">help_victim?</label>
+			<label kind="assignment" x="-306" y="-680">dv = D_V[curr_v],
+dist = dv</label>
+		</transition>
+		<transition id="id23">
+			<source ref="id6"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-459" y="-739">contact_first_responder?</label>
+			<label kind="assignment" x="-442" y="-722">dfr=D_FR[curr_v],
+dist=dfr</label>
+		</transition>
+		<transition id="id24">
+			<source ref="id6"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-620" y="-714">help_victim?</label>
+			<label kind="assignment" x="-637" y="-697">dv = D_V[curr_v],
+dist = dv</label>
+		</transition>
+		<transition id="id25" controllable="false">
+			<source ref="id11"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-323" y="-459">t&gt;=dist/speed</label>
+			<label kind="assignment" x="-306" y="-442">set(dv/speed, -1.0, 1, 0)</label>
+		</transition>
+		<transition id="id26" controllable="false">
+			<source ref="id10"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-229" y="-408">t&gt;=dist/speed</label>
+			<label kind="assignment" x="-246" y="-391">set(dfr/speed, -1.0, 1, 1)</label>
+			<nail x="-102" y="-425"/>
+		</transition>
+		<transition id="id27">
+			<source ref="id13"/>
+			<target ref="id10"/>
+			<label kind="assignment" x="-136" y="-535">t=0</label>
+			<label kind="probability" x="-136" y="-552">(1-r)*pi</label>
+		</transition>
+		<transition id="id28">
+			<source ref="id14"/>
+			<target ref="id11"/>
+			<label kind="assignment" x="-297" y="-544">t=0</label>
+			<label kind="probability" x="-297" y="-561">(1-r)*pi</label>
+		</transition>
+		<transition id="id29" controllable="false">
+			<source ref="id9"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-467" y="-408">t&gt;=dist/speed</label>
+			<label kind="assignment" x="-459" y="-391">set(dfr/speed, 1.0, 1, 1)</label>
+			<nail x="-476" y="-442"/>
+		</transition>
+		<transition id="id30">
+			<source ref="id15"/>
+			<target ref="id9"/>
+			<label kind="assignment" x="-450" y="-552">t=0</label>
+			<label kind="probability" x="-476" y="-544">r*pi</label>
+		</transition>
+		<transition id="id31" controllable="false">
+			<source ref="id8"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-637" y="-357">t&gt;=dist/speed</label>
+			<label kind="assignment" x="-578" y="-340">set(dv/speed, 1.0, 1, 0)</label>
+			<nail x="-637" y="-374"/>
+		</transition>
+		<transition id="id32">
+			<source ref="id16"/>
+			<target ref="id8"/>
+			<label kind="assignment" x="-612" y="-552">t=0</label>
+			<label kind="probability" x="-578" y="-561">r*pi</label>
+		</transition>
+		<transition id="id33">
+			<source ref="id13"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-51" y="-433">set(0.0, 1.0, 0, 0)</label>
+			<label kind="probability" x="-42" y="-450">r*fabs(N_PI-pi)</label>
+			<nail x="0" y="-391"/>
+		</transition>
+		<transition id="id34" controllable="false">
+			<source ref="id4"/>
+			<target ref="id13"/>
+		</transition>
+		<transition id="id35">
+			<source ref="id14"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-212" y="-484">set(0.0, 1.0, 0, 0)</label>
+			<label kind="probability" x="-195" y="-476">r*fabs(N_PI-pi)</label>
+			<nail x="-161" y="-493"/>
+		</transition>
+		<transition id="id36" controllable="false">
+			<source ref="id3"/>
+			<target ref="id14"/>
+		</transition>
+		<transition id="id37">
+			<source ref="id15"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-416" y="-493">set(0.0, -1.0, 0, 0)</label>
+			<label kind="probability" x="-382" y="-510">(1-r)*fabs(N_PI-pi)</label>
+		</transition>
+		<transition id="id38" controllable="false">
+			<source ref="id2"/>
+			<target ref="id15"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id16"/>
+			<target ref="id5"/>
+			<label kind="assignment" x="-629" y="-442">set(0.0, -1.0, 0, 0)</label>
+			<label kind="probability" x="-612" y="-467">(1-r)*fabs(N_PI-pi)</label>
+			<nail x="-629" y="-416"/>
+		</transition>
+		<transition id="id40" controllable="false">
+			<source ref="id1"/>
+			<target ref="id16"/>
+		</transition>
+	</template>
+	<template>
+		<name>Robot</name>
+		<location id="id41" x="-272" y="0">
+			<name x="-331" y="-34">__init__</name>
+			<urgent/>
+		</location>
+		<location id="id42" x="-76" y="0">
+			<name x="-86" y="-34">__done__</name>
+		</location>
+		<location id="id43" x="-272" y="110">
+			<name x="-306" y="127">__end__</name>
+			<label kind="invariant" x="-246" y="110">s_payoff'==0 and
+r_payoff'==0 and
+fr_usage'==0 and
+evac_time'==0 and
+t'==0</label>
+		</location>
+		<init ref="id41"/>
+		<transition id="id44">
+			<source ref="id41"/>
+			<target ref="id43"/>
+			<label kind="guard" x="-365" y="51">curr_v&gt;=N_V</label>
+		</transition>
+		<transition id="id45">
+			<source ref="id42"/>
+			<target ref="id41"/>
+			<label kind="synchronisation" x="-254" y="-136">new?</label>
+			<label kind="assignment" x="-254" y="-119">curr_v++</label>
+			<nail x="-76" y="-119"/>
+			<nail x="-272" y="-119"/>
+		</transition>
+		<transition id="id46">
+			<source ref="id41"/>
+			<target ref="id42"/>
+			<label kind="guard" x="-221" y="51">curr_v&lt;N_V</label>
+			<label kind="synchronisation" x="-272" y="34">contact_first_responder!</label>
+			<label kind="assignment" x="-221" y="68">count_fr+=1</label>
+			<nail x="-178" y="34"/>
+		</transition>
+		<transition id="id47">
+			<source ref="id41"/>
+			<target ref="id42"/>
+			<label kind="guard" x="-212" y="-76">curr_v&lt;N_V</label>
+			<label kind="synchronisation" x="-221" y="-59">help_victim!</label>
+			<label kind="assignment" x="-221" y="-42">count_zr+=1</label>
+			<nail x="-178" y="-42"/>
+		</transition>
+	</template>
+	<system>r = Robot();
 
-        system r,s;
-    </system>
-    <queries>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; count_zr&gt;2)</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; count_fr&gt;2)</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; r.__end__)</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: r_payoff)</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: fr_usage)</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>strategy EndOptR = minE (r_payoff) [&lt;=TAU] : &lt;&gt; r.__end__ and r_payoff&lt;TAU</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; count_zr&gt;2) under EndOptR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; count_fr&gt;2) under EndOptR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; r.__end__) under EndOptR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: r_payoff) under EndOptR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: fr_usage) under EndOptR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>strategy MinFR = minE (fr_usage) [&lt;=TAU] : &lt;&gt; r.__end__ and r_payoff&lt;TAU</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; count_zr&gt;2) under MinFR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; count_fr&gt;2) under MinFR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>Pr[&lt;=TAU](&lt;&gt; r.__end__) under MinFR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: r_payoff) under MinFR</formula>
-            <comment/>
-        </query>
-        <query>
-            <formula>E[&lt;=TAU;1000](max: fr_usage) under MinFR</formula>
-            <comment/>
-        </query>
-    </queries>
+// Rationality Degree: 1.0 -&gt; Perfectly Rational Agent, 0.0 -&gt; Perfectly Irrational Agent
+s = Survivor(get_pi(0), **RAT_S1**, **SPEED_S1**);
+
+system r,s;
+</system>
+	<queries>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; count_zr&gt;2)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; count_fr&gt;2)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; r.__end__)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=TAU;10000](max: r_payoff)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=TAU;10000](max: fr_usage)</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>strategy EndOptR = minE (r_payoff) [&lt;=TAU] : &lt;&gt; r.__end__ and r_payoff&lt;TAU</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; count_zr&gt;2) under EndOptR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; count_fr&gt;2) under EndOptR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; r.__end__) under EndOptR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=TAU;10000](max: r_payoff) under EndOptR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=TAU;10000](max: fr_usage) under EndOptR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>strategy MinFR = minE (fr_usage) [&lt;=TAU] : &lt;&gt; r.__end__ and r_payoff&lt;TAU</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; count_zr&gt;2) under MinFR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; count_fr&gt;2) under MinFR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>Pr[&lt;=TAU](&lt;&gt; r.__end__) under MinFR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=TAU;10000](max: r_payoff) under MinFR</formula>
+			<comment/>
+		</query>
+		<query>
+			<formula>E[&lt;=TAU;10000](max: fr_usage) under MinFR</formula>
+			<comment/>
+		</query>
+	</queries>
 </nta>
