@@ -81,7 +81,7 @@ if LOGGING:
 # Selects best decision based on strategy and current state
 minimize = config['STRATEGY SETTINGS']['MINIMIZE'].lower() == 'true'
 if (not minimize and decisions.get('call-staff', 0) > decisions.get('do-help', 0)) or (
-        minimize and decisions.get('call-staff', 0) < decisions.get('do-help', 0)):
+        minimize and decisions.get('call-staff', int(time_bound)) < decisions.get('do-help', int(time_bound))):
     print('call-staff')
 else:
     print('ask-help')

@@ -22,7 +22,7 @@ def process_regressors(regressors: List[Regressor], prob_gi: float, fallen_dist:
     else:
         gi_label = 'GI'
 
-    ngi_label = 'N' + gi_label
+    ngi_label = 'NOT_' + gi_label
 
     for reg in regressors:
         if reg.state.state.locs[1].label not in [gi_label, ngi_label]:
