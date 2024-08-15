@@ -84,7 +84,7 @@ except FileNotFoundError:
     with open(VIOL_FILE, 'a') as violations_file:
         violations_file.write(new_line)
 
-    print('call-staff')
+    print('ask-help')
 else:
     decisions = process_regressors(strategy.regressors, gi_prob, float(sys.argv[8]), float(sys.argv[9]), ADHOC_STRAT)
 
@@ -100,8 +100,8 @@ else:
 
     # Selects best decision based on strategy and current state
     minimize = config['STRATEGY SETTINGS']['MINIMIZE'].lower() == 'true'
-    if (not minimize and decisions.get('call-staff', 0) > decisions.get('do-help', 0)) or (
-            minimize and decisions.get('call-staff', int(time_bound)) < decisions.get('do-help', int(time_bound))):
+    if (not minimize and decisions.get('call-staff', 0) >= decisions.get('do-help', 0)) or (
+            minimize and decisions.get('call-staff', int(time_bound)) <= decisions.get('do-help', int(time_bound))):
         print('call-staff')
     else:
         print('ask-help')
