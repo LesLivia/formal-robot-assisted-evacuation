@@ -122,13 +122,13 @@ t&lt;=dist/speed</label>
 			<source ref="id11"/>
 			<target ref="id5"/>
 			<label kind="guard" x="-323" y="-459">t&gt;=dist/speed</label>
-			<label kind="assignment" x="-306" y="-442">set(3.0, 0.7, 1)</label>
+			<label kind="assignment" x="-306" y="-442">set(dv/speed, 0.7, 1)</label>
 		</transition>
 		<transition id="id21" controllable="false">
 			<source ref="id10"/>
 			<target ref="id5"/>
 			<label kind="guard" x="-229" y="-408">t&gt;=dist/speed</label>
-			<label kind="assignment" x="-246" y="-391">set(2.8, 0.7, 1)</label>
+			<label kind="assignment" x="-246" y="-391">set(dfr/speed, 0.7, 1)</label>
 			<nail x="-102" y="-425"/>
 		</transition>
 		<transition id="id22">
@@ -147,7 +147,7 @@ t&lt;=dist/speed</label>
 			<source ref="id9"/>
 			<target ref="id5"/>
 			<label kind="guard" x="-467" y="-408">t&gt;=dist/speed</label>
-			<label kind="assignment" x="-459" y="-391">set(2.8, 1.3, 1)</label>
+			<label kind="assignment" x="-459" y="-391">set(dfr/speed, 1.3, 1)</label>
 			<nail x="-476" y="-442"/>
 		</transition>
 		<transition id="id25">
@@ -160,7 +160,7 @@ t&lt;=dist/speed</label>
 			<source ref="id8"/>
 			<target ref="id5"/>
 			<label kind="guard" x="-637" y="-357">t&gt;=dist/speed</label>
-			<label kind="assignment" x="-578" y="-340">set(3.0, 1.3, 1)</label>
+			<label kind="assignment" x="-578" y="-340">set(dv/speed, 1.3, 1)</label>
 			<nail x="-637" y="-374"/>
 		</transition>
 		<transition id="id27">
@@ -180,7 +180,7 @@ t&lt;=dist/speed</label>
 		<transition id="id30">
 			<source ref="id12"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-51" y="-433">set(2.6, 1.1, 0)</label>
+			<label kind="assignment" x="-51" y="-433">set(TAU+1, 1.1, 0)</label>
 			<label kind="probability" x="-42" y="-450">r*fabs(N_PI-pi)</label>
 			<nail x="0" y="-391"/>
 		</transition>
@@ -191,7 +191,7 @@ t&lt;=dist/speed</label>
 		<transition id="id32">
 			<source ref="id13"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-212" y="-484">set(2.2, 1.3, 0)</label>
+			<label kind="assignment" x="-212" y="-484">set(TAU+1, 1.3, 0)</label>
 			<label kind="probability" x="-195" y="-476">r*fabs(N_PI-pi)</label>
 			<nail x="-161" y="-493"/>
 		</transition>
@@ -202,7 +202,7 @@ t&lt;=dist/speed</label>
 		<transition id="id34">
 			<source ref="id14"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-408" y="-493">set(2.6, 0.5, 0)</label>
+			<label kind="assignment" x="-408" y="-493">set(TAU+1, 0.5, 0)</label>
 			<label kind="probability" x="-382" y="-510">(1-r)*fabs(N_PI-pi)</label>
 		</transition>
 		<transition id="id35" controllable="false">
@@ -212,7 +212,7 @@ t&lt;=dist/speed</label>
 		<transition id="id36">
 			<source ref="id15"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-629" y="-442">set(2.2, 0.7, 0)</label>
+			<label kind="assignment" x="-629" y="-442">set(TAU+1, 0.7, 0)</label>
 			<label kind="probability" x="-612" y="-467">(1-r)*fabs(N_PI-pi)</label>
 			<nail x="-629" y="-416"/>
 		</transition>
@@ -249,7 +249,7 @@ t&lt;=dist/speed</label>
 int get_pi(int id) {
     int i, res = 1;
     for(i=0; i&lt;N_PI; i++) 
-        if (PI_S[id][i]==PI_V[i])
+        if (PI_S[i]==PI_V[i])
             res = res + 1;
     
     return res;
