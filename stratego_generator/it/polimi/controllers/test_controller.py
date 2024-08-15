@@ -13,10 +13,13 @@ if 'impact' in curr_path:
     config.sections()
     LOG_FILE = config['GENERAL SETTINGS']['controller.log.file'].format(curr_path)
     LOG_FILE = LOG_FILE.replace('impact2.10.7', 'stratego_generator')
+    VIOL_FILE = config['STRATEGY SETTINGS']['violations.log.file'].format(curr_path)
+    VIOL_FILE = VIOL_FILE.replace('impact2.10.7', 'stratego_generator')
 else:
     config.read('./resources/config/config.ini')
     config.sections()
     LOG_FILE = config['GENERAL SETTINGS']['controller.log.file'].format(curr_path)
+    VIOL_FILE = config['STRATEGY SETTINGS']['violations.log.file'].format(curr_path)
 
 LOGGING = config['GENERAL SETTINGS']['controller.logging'] == 'True'
 
@@ -62,26 +65,43 @@ if ADHOC_STRAT:
     strategy_name = 'end_min_t_{}_{}'.format(rat_deg, time_bound)
     params = {'TIME_BOUND': time_bound, 'WALKING_SPEED': walking_speed, 'RAT_DEG': rat_deg,
               'DIST_V': int(math.ceil(float(sys.argv[8]) * 10)), 'DIST_FR': int(math.ceil(float(sys.argv[9]) * 10))}
+
+    STRATEGY_PATH = config['STRATEGY SETTINGS']['STRATEGY_PATH'].format(strategy_name)
+    if os.path.exists(STRATEGY_PATH):
+        os.remove(STRATEGY_PATH)
+
     generate_model(params, strategy_name)
 else:
     strategy_name = config['STRATEGY SETTINGS']['STRATEGY_NAME']
 
-strategy: OptimizedStrategy = parse_strategy(strategy_name)
-decisions = process_regressors(strategy.regressors, gi_prob, float(sys.argv[8]), float(sys.argv[9]), ADHOC_STRAT)
+try:
+    strategy: OptimizedStrategy = parse_strategy(strategy_name)
+except FileNotFoundError:
+    new_line = "{},{},{},{},{},{},{},{},{},{}\n".format(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]),
+                                                        int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
+                                                        int(sys.argv[7]), float(sys.argv[8]),
+                                                        float(sys.argv[9]), int(time_bound)/10)
+    with open(VIOL_FILE, 'a') as violations_file:
+        violations_file.write(new_line)
 
-# Logs inputs and outputs
-if LOGGING:
-    new_line = "\n{},{},{},{},{},{},{},{},{},{:.4f}".format(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]),
-                                                            int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
-                                                            int(sys.argv[7]), float(sys.argv[8]), float(sys.argv[9]),
-                                                            gi_prob)
-    with open(LOG_FILE, "a") as log_file:
-        log_file.write(new_line)
-
-# Selects best decision based on strategy and current state
-minimize = config['STRATEGY SETTINGS']['MINIMIZE'].lower() == 'true'
-if (not minimize and decisions.get('call-staff', 0) > decisions.get('do-help', 0)) or (
-        minimize and decisions.get('call-staff', int(time_bound)) < decisions.get('do-help', int(time_bound))):
     print('call-staff')
 else:
-    print('ask-help')
+    decisions = process_regressors(strategy.regressors, gi_prob, float(sys.argv[8]), float(sys.argv[9]), ADHOC_STRAT)
+
+    # Logs inputs and outputs
+    if LOGGING:
+        new_line = "\n{},{},{},{},{},{},{},{},{},{:.4f}".format(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]),
+                                                                int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
+                                                                int(sys.argv[7]), float(sys.argv[8]),
+                                                                float(sys.argv[9]),
+                                                                gi_prob)
+        with open(LOG_FILE, "a") as log_file:
+            log_file.write(new_line)
+
+    # Selects best decision based on strategy and current state
+    minimize = config['STRATEGY SETTINGS']['MINIMIZE'].lower() == 'true'
+    if (not minimize and decisions.get('call-staff', 0) > decisions.get('do-help', 0)) or (
+            minimize and decisions.get('call-staff', int(time_bound)) < decisions.get('do-help', int(time_bound))):
+        print('call-staff')
+    else:
+        print('ask-help')
