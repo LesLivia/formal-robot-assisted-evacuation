@@ -1,7 +1,7 @@
 {
-  "strat_name": "EndOptR",
-  "property": "s1.__end__ or s2.__end__",
-  "n_survivors": 2,
+  "strat_name": "RescueChild",
+  "property": "agent_to_help==1 and s.__end__",
+  "n_survivors": 1,
   "pi_survivors": {
     "s1": [
       0,
@@ -9,7 +9,7 @@
       0
     ]
   },
-  "n_victims": 1,
+  "n_victims": 2,
   "pi_victims": {
     "v1": [
       0,
@@ -22,6 +22,6 @@
       1
     ]
   },
-  "plot_dim_1": 4,
-  "plot_dim_2": 5
+  "plot_dim_1": 3,
+  "plot_dim_2": 4
 }

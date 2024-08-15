@@ -1,0 +1,100 @@
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1723734466
+  State space representation uses minimal constraint systems with future testing
+  Using HashMap + Compress integers for discrete state storage
+[2K
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Formula: Pr[<=TAU](<> agent_to_help==1 and s.__end__)
+[2K -- Formula is satisfied.
+ -- Result: (119/373 runs) Pr(<> …) in [0.271995,0.368976] (95% CI)
+Values in [0,11] mean=5.6386554621848743 steps=1: 58 0 0 0 0 0 0 0 0 0 0 61
+ -- States explored : 2916 states
+ -- CPU user time used : 78 ms
+ -- Virtual memory used : 34460164 KiB
+ -- Resident memory used : 15628 KiB
+[2K
+Verifying formula 2 at /nta/queries/query[2]/formula
+ -- Formula: E[<=TAU;10000](max: r_payoff)
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = 5.833 ± 0.119494 (95% CI)
+
+Values in [0,15] mean=5.8330000000000002 steps=0.14999999999999999: 5004 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1631 0 0 0 0 0 0 0 0 0 0 0 0 1706 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1659
+ -- States explored : 79992 states
+ -- CPU user time used : 36 ms
+ -- Virtual memory used : 34460164 KiB
+ -- Resident memory used : 16216 KiB
+[2K
+Verifying formula 3 at /nta/queries/query[3]/formula
+ -- Formula: strategy EndOptR = minE (r_payoff) [<=TAU] : <> s.__end__
+[2K -- Formula is satisfied.
+ -- Result: (9000 runs)
+Learning statistics for best strategy: 
+	Number of resets: 1
+	Number of iterations in last reset: 11
+	Number of iterations in total: 25
+
+
+ -- States explored : 62986 states
+ -- CPU user time used : 37 ms
+ -- Virtual memory used : 34460168 KiB
+ -- Resident memory used : 16456 KiB
+[2K
+Verifying formula 4 at /nta/queries/query[4]/formula
+ -- Formula: Pr[<=TAU](<> agent_to_help==1 and s.__end__) under EndOptR
+[2K -- Formula is satisfied.
+ -- Result: (60/299 runs) Pr(<> …) in [0.156767,0.250613] (95% CI)
+Values in [0,0] mean=0 steps=2.2204460492503131e-16: 60
+ -- States explored : 2345 states
+ -- CPU user time used : 60 ms
+ -- Virtual memory used : 34460168 KiB
+ -- Resident memory used : 16504 KiB
+[2K
+Verifying formula 5 at /nta/queries/query[5]/formula
+ -- Formula: E[<=TAU;10000](max: r_payoff) under EndOptR
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = 4.5414 ± 0.0882097 (95% CI)
+
+Values in [0,9] mean=4.5414000000000003 steps=0.089999999999999997: 4954 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5046
+ -- States explored : 80092 states
+ -- CPU user time used : 46 ms
+ -- Virtual memory used : 34460168 KiB
+ -- Resident memory used : 16712 KiB
+[2K
+Verifying formula 6 at /nta/queries/query[6]/formula
+ -- Formula: strategy RescueChild = minE (r_payoff) [<=TAU] : <> agent_to_help>=0 and PI_V[agent_to_help][1]==1 
+[2K -- Formula is satisfied.
+ -- Result: (13829 runs)
+Learning statistics for best strategy: 
+	Number of resets: 0
+	Number of iterations in last reset: 1
+	Number of iterations in total: 1
+
+
+ -- States explored : 76628 states
+ -- CPU user time used : 50 ms
+ -- Virtual memory used : 34460168 KiB
+ -- Resident memory used : 16716 KiB
+[2K
+Verifying formula 7 at /nta/queries/query[7]/formula
+ -- Formula: Pr[<=TAU](<> agent_to_help==1 and s.__end__) under RescueChild
+[2K -- Formula is satisfied.
+ -- Result: (72/72 runs) Pr(<> …) in [0.950056,1] (95% CI)
+Values in [0,11] mean=7.0277777777777777 steps=1.2222222222222223: 26 0 0 0 0 0 0 0 0 46
+ -- States explored : 524 states
+ -- CPU user time used : 0 ms
+ -- Virtual memory used : 34460168 KiB
+ -- Resident memory used : 16716 KiB
+[2K
+Verifying formula 8 at /nta/queries/query[8]/formula
+ -- Formula: E[<=TAU;10000](max: r_payoff) under RescueChild
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = 5.5517 ± 0.107812 (95% CI)
+
+Values in [0,11] mean=5.5517000000000003 steps=0.11: 4953 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5047
+ -- States explored : 80094 states
+ -- CPU user time used : 46 ms
+ -- Virtual memory used : 34460168 KiB
+ -- Resident memory used : 16880 KiB
