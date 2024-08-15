@@ -1,0 +1,192 @@
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1723739268
+  State space representation uses minimal constraint systems with future testing
+  Using HashMap + Compress integers for discrete state storage
+[2K
+Verifying formula 1 at /nta/queries/query[1]/formula
+ -- Formula: Pr[<=TAU](<> count_zr>2)
+[2K -- Formula is satisfied.
+ -- Result: (29/230 runs) Pr(<> …) in [0.0860934,0.176039] (95% CI)
+Values in [32.543943708257643,39.919449209546229] mean=38.326744051034133 steps=1.2292509168814312: 1 1 0 3 11 13
+ -- States explored : 6815 states
+ -- CPU user time used : 39 ms
+ -- Virtual memory used : 34460176 KiB
+ -- Resident memory used : 15692 KiB
+[2K
+Verifying formula 2 at /nta/queries/query[2]/formula
+ -- Formula: Pr[<=TAU](<> count_fr>2)
+[2K -- Formula is satisfied.
+ -- Result: (92/345 runs) Pr(<> …) in [0.220734,0.316656] (95% CI)
+Values in [30.404022045780675,39.601183720588459] mean=34.090790046536462 steps=0.91971616748077867: 18 8 20 8 9 5 4 3 7 10
+ -- States explored : 9577 states
+ -- CPU user time used : 73 ms
+ -- Virtual memory used : 34460180 KiB
+ -- Resident memory used : 15824 KiB
+[2K
+Verifying formula 3 at /nta/queries/query[3]/formula
+ -- Formula: Pr[<=TAU](<> r.__end__)
+[2K -- Formula is satisfied.
+ -- Result: (13/173 runs) Pr(<> …) in [0.0406165,0.125072] (95% CI)
+Values in [32.97733712053526,39.472784576788193] mean=36.347305584472664 steps=1.6238618640632336: 5 1 3 4
+ -- States explored : 4870 states
+ -- CPU user time used : 28 ms
+ -- Virtual memory used : 34460180 KiB
+ -- Resident memory used : 15840 KiB
+[2K
+Verifying formula 4 at /nta/queries/query[4]/formula
+ -- Formula: E[<=TAU;10000](max: r_payoff)
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = 30.8897 ± 0.124931 (95% CI)
+
+Values in [15,38] mean=30.889700000000001 steps=0.23000000000000001: 35 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2548 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1470 0 0 0 895 0 0 0 104 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3412 0 0 0 1509 0 0 0 0 27
+ -- States explored : 297372 states
+ -- CPU user time used : 131 ms
+ -- Virtual memory used : 34591252 KiB
+ -- Resident memory used : 16392 KiB
+[2K
+Verifying formula 5 at /nta/queries/query[5]/formula
+ -- Formula: E[<=TAU;10000](max: fr_usage) 
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = 0.9893 ± 0.0138529 (95% CI)
+
+Values in [0,2] mean=0.98929999999999996 steps=0.02: 2551 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5005 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2444
+ -- States explored : 296740 states
+ -- CPU user time used : 130 ms
+ -- Virtual memory used : 34599444 KiB
+ -- Resident memory used : 17256 KiB
+[2K
+Verifying formula 6 at /nta/queries/query[6]/formula
+ -- Formula: strategy EndOptR = minE (r_payoff) [<=TAU] : <> r.__end__ and r_payoff<TAU
+[2K -- Formula is satisfied.
+ -- Result: (18000 runs)
+Learning statistics for best strategy: 
+	Number of resets: 2
+	Number of iterations in last reset: 1
+	Number of iterations in total: 27
+
+
+ -- States explored : 563567 states
+ -- CPU user time used : 327 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17536 KiB
+[2K
+Verifying formula 7 at /nta/queries/query[7]/formula
+ -- Formula: Pr[<=TAU](<> count_zr>2) under EndOptR
+[2K -- Formula is satisfied.
+ -- Result: (0/72 runs) Pr(<> …) in [0,0.0499441] (95% CI)
+ -- States explored : 2754 states
+ -- CPU user time used : 2 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17540 KiB
+[2K
+Verifying formula 8 at /nta/queries/query[8]/formula
+ -- Formula: Pr[<=TAU](<> count_fr>2) under EndOptR
+[2K -- Formula is satisfied.
+ -- Result: (191/215 runs) Pr(<> …) in [0.83847,0.927155] (95% CI)
+Values in [30,31] mean=30.32460732984293 steps=0.071428571428571425: 129 0 0 0 0 0 0 0 0 0 0 0 0 0 62
+ -- States explored : 6310 states
+ -- CPU user time used : 36 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17540 KiB
+[2K
+Verifying formula 9 at /nta/queries/query[9]/formula
+ -- Formula: Pr[<=TAU](<> r.__end__) under EndOptR
+[2K -- Formula is satisfied.
+ -- Result: (112/367 runs) Pr(<> …) in [0.258442,0.355088] (95% CI)
+Values in [30,31] mean=30.633928571428573 steps=0.090909090909090912: 41 0 0 0 0 0 0 0 0 0 0 71
+ -- States explored : 14191 states
+ -- CPU user time used : 81 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17544 KiB
+[2K
+Verifying formula 10 at /nta/queries/query[10]/formula
+ -- Formula: E[<=TAU;10000](max: r_payoff) under EndOptR
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = 30.4675 ± 0.00978077 (95% CI)
+
+Values in [30,31] mean=30.467500000000001 steps=0.01: 5325 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4675
+ -- States explored : 389346 states
+ -- CPU user time used : 197 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17740 KiB
+[2K
+Verifying formula 11 at /nta/queries/query[11]/formula
+ -- Formula: E[<=TAU;10000](max: fr_usage) under EndOptR
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = ≈ 2
+
+Values in [2,2] mean=2 steps=2.2204460492503131e-16: 10000
+ -- States explored : 391362 states
+ -- CPU user time used : 198 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17900 KiB
+[2K
+Verifying formula 12 at /nta/queries/query[12]/formula
+ -- Formula: strategy MinFR = minE (fr_usage) [<=TAU] : <> r.__end__ and r_payoff<TAU
+[2K -- Formula is satisfied.
+ -- Result: (18000 runs)
+Learning statistics for best strategy: 
+	Number of resets: 0
+	Number of iterations in last reset: 2
+	Number of iterations in total: 2
+
+
+ -- States explored : 559950 states
+ -- CPU user time used : 317 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17920 KiB
+[2K
+Verifying formula 13 at /nta/queries/query[13]/formula
+ -- Formula: Pr[<=TAU](<> count_zr>2) under MinFR
+[2K -- Formula is satisfied.
+ -- Result: (154/396 runs) Pr(<> …) in [0.3406,0.438851] (95% CI)
+Values in [36,37] mean=36.740259740259738 steps=0.076923076923076927: 40 0 0 0 0 0 0 0 0 0 0 0 0 114
+ -- States explored : 13500 states
+ -- CPU user time used : 90 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17928 KiB
+[2K
+Verifying formula 14 at /nta/queries/query[14]/formula
+ -- Formula: Pr[<=TAU](<> count_fr>2) under MinFR
+[2K -- Formula is satisfied.
+ -- Result: (38/254 runs) Pr(<> …) in [0.108096,0.199515] (95% CI)
+Values in [36,37] mean=36.342105263157897 steps=0.14285714285714285: 25 0 0 0 0 0 0 13
+ -- States explored : 9212 states
+ -- CPU user time used : 51 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17928 KiB
+[2K
+Verifying formula 15 at /nta/queries/query[15]/formula
+ -- Formula: Pr[<=TAU](<> r.__end__) under MinFR
+[2K -- Formula is satisfied.
+ -- Result: (100/355 runs) Pr(<> …) in [0.235482,0.331583] (95% CI)
+Values in [36,38] mean=36.829999999999998 steps=0.20000000000000001: 29 0 0 0 0 59 0 0 0 0 12
+ -- States explored : 13151 states
+ -- CPU user time used : 79 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 17932 KiB
+[2K
+Verifying formula 16 at /nta/queries/query[16]/formula
+ -- Formula: E[<=TAU;10000](max: r_payoff) under MinFR
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = 36.445 ± 0.0112572 (95% CI)
+
+Values in [36,38] mean=36.445 steps=0.02: 5964 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3622 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 414
+ -- States explored : 379620 states
+ -- CPU user time used : 192 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 18096 KiB
+[2K
+Verifying formula 17 at /nta/queries/query[17]/formula
+ -- Formula: E[<=TAU;10000](max: fr_usage) under MinFR
+[2K -- Formula is satisfied.
+ -- Result: (10000 runs) E(max) = ≈ 1
+
+Values in [1,1] mean=1 steps=2.2204460492503131e-16: 10000
+ -- States explored : 376928 states
+ -- CPU user time used : 190 ms
+ -- Virtual memory used : 34599448 KiB
+ -- Resident memory used : 18256 KiB
