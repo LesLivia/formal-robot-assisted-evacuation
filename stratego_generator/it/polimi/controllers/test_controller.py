@@ -3,6 +3,7 @@ import math
 import os
 import random
 import sys
+import time
 
 curr_path = os.getcwd()
 SUBMODULE_PATHS = ['submodules/gi_estimator', 'submodules/StrategyViz', '']
@@ -15,11 +16,16 @@ if 'impact' in curr_path:
     LOG_FILE = LOG_FILE.replace('impact2.10.7', 'stratego_generator')
     VIOL_FILE = config['STRATEGY SETTINGS']['violations.log.file'].format(curr_path)
     VIOL_FILE = VIOL_FILE.replace('impact2.10.7', 'stratego_generator')
+    TIMES_FILE = config['STRATEGY SETTINGS']['wallclocktime.log.file'].format(curr_path)
+    TIMES_FILE = TIMES_FILE.replace('impact2.10.7', 'stratego_generator')
 else:
     config.read('./resources/config/config.ini')
     config.sections()
     LOG_FILE = config['GENERAL SETTINGS']['controller.log.file'].format(curr_path)
     VIOL_FILE = config['STRATEGY SETTINGS']['violations.log.file'].format(curr_path)
+    TIMES_FILE = config['STRATEGY SETTINGS']['wallclocktime.log.file'].format(curr_path)
+
+start_time = time.time()
 
 LOGGING = config['GENERAL SETTINGS']['controller.logging'] == 'True'
 
@@ -80,9 +86,13 @@ except FileNotFoundError:
     new_line = "{},{},{},{},{},{},{},{},{},{}\n".format(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]),
                                                         int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
                                                         int(sys.argv[7]), float(sys.argv[8]),
-                                                        float(sys.argv[9]), int(time_bound)/10)
+                                                        float(sys.argv[9]), int(time_bound) / 10)
     with open(VIOL_FILE, 'a') as violations_file:
         violations_file.write(new_line)
+
+    new_line = "{:.4f}\n".format(time.time() - start_time)
+    with open(TIMES_FILE, "a") as log_file:
+        log_file.write(new_line)
 
     print('ask-help')
 else:
@@ -97,6 +107,10 @@ else:
                                                                 gi_prob)
         with open(LOG_FILE, "a") as log_file:
             log_file.write(new_line)
+
+    new_line = "{:.4f}\n".format(time.time() - start_time)
+    with open(TIMES_FILE, "a") as log_file:
+        log_file.write(new_line)
 
     # Selects best decision based on strategy and current state
     minimize = config['STRATEGY SETTINGS']['MINIMIZE'].lower() == 'true'
