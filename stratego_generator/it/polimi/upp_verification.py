@@ -61,7 +61,7 @@ try:
 except IndexError:
     print("First argument either 'hist', 'multi_victim', or 'multi_survivor'.")
 else:
-    FIXED_PARAMS: Dict[str, int] = {'timebound': 30, 'rat_deg': 0.75, 'dist_fr': 15, 'speed': 1, 'dist_s': 0}
+    FIXED_PARAMS: Dict[str, int] = {'timebound': 40, 'rat_deg': 0.75, 'dist_fr': 15, 'speed': 1, 'dist_s': 0}
 
     # Processes parameters search space
     with open('./resources/config/model_params.json') as json_file:
