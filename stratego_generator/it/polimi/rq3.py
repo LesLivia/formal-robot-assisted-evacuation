@@ -42,7 +42,7 @@ for i, model_size in enumerate(files):
             else:
                 data.append([float(row[3]) for row in reader])
 
-fig, axs = plt.subplots(figsize=(9, 6))
+fig, axs = plt.subplots(ncols=2, figsize=(9, 6), gridspec_kw={'width_ratios': [3, 1]})
 
 pvalues = []
 eff_sizes = []
@@ -57,13 +57,44 @@ for v in data:
 
 print(pvalues, eff_sizes)
 
-sns.boxplot(data=data, showmeans=True,
+sns.boxplot(data=data, showmeans=True, ax=axs[0],
             meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
-sns.pointplot(data=[sum(v) / len(v) for v in data], color='black', linewidth=1)
+sns.pointplot(data=[sum(v) / len(v) for v in data], color='black', linewidth=1, ax=axs[0])
 
-axs.set_xlabel('N_s x N_v', fontsize=14)
-axs.set_ylabel('Wall-clock time [s]', fontsize=14)
-axs.set_xticklabels([str(key) for key in files], fontsize=14)
+axs[0].set_title('RQ1', fontsize=14)
+axs[0].set_xlabel('N_s x N_v', fontsize=14)
+axs[0].set_ylabel('Wall-clock time [s]', fontsize=14)
+axs[0].set_xticklabels([str(key) for key in files], fontsize=14)
 
-plt.savefig('./rq3_uppaal_only_times.pdf', bbox_inches='tight')
+# RQ2-related wall-clock plots
+
+files = {1: ['./resources/logs/wallclocktimes.csv']}
+
+data = []
+
+for i, model_size in enumerate(files):
+    for file in files[model_size]:
+        with open(file, 'r') as f:
+            reader = csv.reader(f)
+            if len(data) > i:
+                data[i].extend([float(row[0]) for row in reader])
+            else:
+                data.append([float(row[0]) for row in reader])
+
+baseline = [0] * len(data[0])
+
+stat, pvalue = ss.mannwhitneyu(baseline, data[0])
+est, mag = VD_A(baseline, data[0])
+
+print(pvalue, mag)
+
+sns.boxplot(data=data, showmeans=True, ax=axs[1],
+            meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
+axs[1].set_ylim(0, 0.4)
+axs[1].set_title('RQ2', fontsize=14)
+axs[1].set_xlabel('N_s x N_v', fontsize=14)
+# axs[1].set_ylabel('Wall-clock time [s]', fontsize=14)
+axs[1].set_xticklabels([str(key) for key in files], fontsize=14)
+
+plt.savefig('./rq3.pdf', bbox_inches='tight')
 plt.show()
