@@ -52,6 +52,10 @@ def get_fall_length(tup):
     return tup[1]
 
 
+COUNT = 10
+STRAT = 'tosem_1.0_100'
+
+
 def count_decisions(seed):
     for file in os.listdir(CSV_PATH):
         if file.startswith(out_prefix):
@@ -92,7 +96,7 @@ def process_csv(file, strat_name):
                         metrics[miss] = []
             else:
                 seeds_with_time[row[1]] = {'strategy_name': strat_name}
-                if count_decisions(row[1]) < 10:  # if the robot makes less than 3 decisions
+                if COUNT > 0 and count_decisions(row[1]) < COUNT:  # if the robot makes less than 3 decisions
                     continue
 
                 for j, value in enumerate(row[2:]):
@@ -196,7 +200,8 @@ fig, axs = plt.subplots(ncols=2, figsize=(12, 7), gridspec_kw={'width_ratios': [
 t_evac = []
 fr_calls = [[], []]
 
-for t_fall in all_times['r_1.0_100']:
+for t_fall in all_times[STRAT]:
+
     for i, conf in enumerate(configurations[:-1]):
         if len(t_evac) > i:
             t_evac[i].extend(t_fall[2][conf + '_evacuation_time'])
@@ -206,8 +211,10 @@ for t_fall in all_times['r_1.0_100']:
     fr_calls[0].extend(t_fall[2]['staff-support' + '_staff_requests'])
     fr_calls[1].extend(t_fall[2]['adaptive-support' + '_staff_requests'])
 
-sns.boxplot(data=t_evac, ax=axs[0])
-sns.boxplot(data=fr_calls, ax=axs[1])
+sns.boxplot(data=t_evac, ax=axs[0], showmeans=True,
+            meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
+sns.boxplot(data=fr_calls, ax=axs[1], showmeans=True,
+            meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
 
 axs[0].set_ylim(200, 700)
 axs[0].set_xticks(np.arange(len(configurations[:-1])))
@@ -220,6 +227,9 @@ axs[1].set_title('p-value: {:.1E}, eff. size: {}'.format(pvalue, mag), fontsize=
 axs[1].set_xticklabels(['staff-support', 'FormIdeAble'], fontsize=12)
 axs[1].set_ylabel('FR calls', fontsize=14)
 
+plt.savefig('./rq2_box_{}_10_{}.pdf'.format(STRAT, COUNT), bbox_inches='tight')
+plt.show()
+
 pairs = [(c1, c2) for i, c1 in enumerate(configurations[:-1]) for c2 in configurations[i + 1:-1]]
 
 for pair in pairs:
@@ -230,8 +240,6 @@ for pair in pairs:
     est, mag = VD_A(t_evac[i], t_evac[j])
 
     print('{} vs. {}: p-value {:.1E}, eff. size {}'.format(pair[0], pair[1], pvalue, mag))
-
-plt.show()
 
 extra_plots = False
 

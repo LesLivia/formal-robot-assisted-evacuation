@@ -65,4 +65,5 @@ axs.set_xlabel('N_s x N_v', fontsize=14)
 axs.set_ylabel('Wall-clock time [s]', fontsize=14)
 axs.set_xticklabels([str(key) for key in files], fontsize=14)
 
+plt.savefig('./rq3_uppaal_only_times.pdf', bbox_inches='tight')
 plt.show()
