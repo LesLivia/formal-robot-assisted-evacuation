@@ -52,8 +52,8 @@ def get_fall_length(tup):
     return tup[1]
 
 
-COUNT = 10
-STRAT = 'tosem_1.0_100'
+COUNT = 1
+STRAT = 'r_1.0_50'
 
 
 def count_decisions(seed):
