@@ -5,6 +5,24 @@ from src.strategyviz.strategy2pta.opt_strategy import Regressor
 CHAN_TO_ACT: Dict[str, str] = {'help_victim!': 'do-help', 'contact_first_responder!': 'call-staff'}
 
 
+def process_tf_out(line):
+    if 'Prob=' in line:
+        return float(line.split('Prob=')[1].split(')')[0])
+    else:
+        return None
+
+
+def process_giprob_log(file):
+    params = ['helper-gender', 'helper-culture', 'helper-age', 'fallen-gender', 'fallen-culture', 'fallen-age']
+
+    with open(file) as giprob_file:
+        lines = giprob_file.readlines()
+        tf_inputs = [i for i, l in enumerate(lines) if '[OUT] Input parameters' in l]
+        tf_params = [tuple([int(lines[i].split(p + ' ')[1].split(' ')[0]) for p in params]) for i in tf_inputs]
+        tf_outputs = [process_tf_out(lines[i + 1]) for i in tf_inputs]
+        return {p: tf_outputs[i] for i, p in enumerate(tf_params) if tf_outputs[i] is not None}
+
+
 def process_action(act: str):
     upp_chan = act.split(', ')[1]
     return CHAN_TO_ACT[upp_chan]

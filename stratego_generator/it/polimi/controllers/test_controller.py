@@ -18,12 +18,15 @@ if 'impact' in curr_path:
     VIOL_FILE = VIOL_FILE.replace('impact2.10.7', 'stratego_generator')
     TIMES_FILE = config['STRATEGY SETTINGS']['wallclocktime.log.file'].format(curr_path)
     TIMES_FILE = TIMES_FILE.replace('impact2.10.7', 'stratego_generator')
+    GIPROB_FILE = config['STRATEGY SETTINGS']['giprob.log.file'].format(curr_path)
+    GIPROB_FILE = GIPROB_FILE.replace('impact2.10.7', 'stratego_generator')
 else:
     config.read('./resources/config/config.ini')
     config.sections()
     LOG_FILE = config['GENERAL SETTINGS']['controller.log.file'].format(curr_path)
     VIOL_FILE = config['STRATEGY SETTINGS']['violations.log.file'].format(curr_path)
     TIMES_FILE = config['STRATEGY SETTINGS']['wallclocktime.log.file'].format(curr_path)
+    GIPROB_FILE = config['STRATEGY SETTINGS']['giprob.log.file'].format(curr_path)
 
 start_time = time.time()
 
@@ -43,7 +46,7 @@ for sub in SUBMODULE_PATHS:
 from src.strategyviz.strategy2pta.opt_strategy import OptimizedStrategy
 from it.polimi.mgrs.strategy_mgr import parse_strategy
 from it.polimi.mgrs.model_mgr import generate_model
-from it.polimi.controllers.utils import process_regressors
+from it.polimi.controllers.utils import process_regressors, process_giprob_log
 
 gi_prob_distr = config['STRATEGY SETTINGS']['GI_PROB_DISTR'].lower()
 
@@ -51,8 +54,16 @@ if gi_prob_distr == 'uniform':
     gi_prob_min = float(config['STRATEGY SETTINGS']['GI_PROB_MIN'])
     gi_prob_max = float(config['STRATEGY SETTINGS']['GI_PROB_MAX'])
     gi_prob = random.uniform(gi_prob_min, gi_prob_max)
-else:
+elif gi_prob_distr == 'constant':
     gi_prob = float(config['STRATEGY SETTINGS']['GI_PROB'])
+else:
+    probs = process_giprob_log(GIPROB_FILE)
+    params = (int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]),
+              int(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7]))
+    if params in probs:
+        gi_prob = probs[params]
+    else:
+        gi_prob = sum(list(probs.values())) / len(probs)
 
 walking_speed = config['STRATEGY SETTINGS']['WALKING_SPEED']
 time_bound = config['STRATEGY SETTINGS']['TIME_BOUND']
