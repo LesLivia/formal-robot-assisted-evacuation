@@ -1,5 +1,5 @@
 import configparser
-import math
+import csv
 import sys
 from random import randint
 
@@ -14,10 +14,14 @@ config.sections()
 MIN_SEED = -2147483648
 MAX_SEED = 2147483647
 
+RAND_SEEDS = config['NETLOGO']['random.seeds'] == 'Y'
+SEEDS_FILE = config['NETLOGO']['seeds.file']
 PASS_MIN = int(config['NETLOGO']['PASS_MIN'])
 PASS_MAX = int(config['NETLOGO']['PASS_MAX'])
 STAFF_MIN = int(config['NETLOGO']['STAFF_MIN'])
 STAFF_MAX = int(config['NETLOGO']['STAFF_MAX'])
+NORMAL_STAFF_MIN = int(config['NETLOGO']['NORMAL_STAFF_MIN'])
+NORMAL_STAFF_MAX = int(config['NETLOGO']['NORMAL_STAFF_MAX'])
 
 SET_FRAME_GENERATION_COMMAND = "set ENABLE_FRAME_GENERATION {}"
 SET_FALL_LENGTH_COMMAND = "set DEFAULT_FALL_LENGTH {}"
@@ -48,12 +52,25 @@ def main():
 
     results_file_path = WORKSPACE_FOLDER + "data/"
     results_file_name = "exp_{}_{}_{}.csv".format(STRAT_NAME, N_SAMPLES, FALL_DURATION)
-    random_seeds = [randint(MIN_SEED, MAX_SEED) for i in range(N_SAMPLES)]
-    random_passengers = [randint(PASS_MIN, PASS_MAX) for i in range(N_SAMPLES)]
-    random_staff = [int(math.ceil(randint(STAFF_MIN, STAFF_MAX) / 100 * n_pass)) for n_pass in random_passengers]
+
+    if RAND_SEEDS:
+        random_seeds = [randint(MIN_SEED, MAX_SEED) for i in range(N_SAMPLES)]
+        random_passengers = [randint(PASS_MIN, PASS_MAX) for i in range(N_SAMPLES)]
+        random_staff = [randint(STAFF_MIN, STAFF_MAX) for i in range(N_SAMPLES)]
+        random_normal_staff = [randint(NORMAL_STAFF_MIN, NORMAL_STAFF_MAX) for i in range(N_SAMPLES)]
+    else:
+        with open(SEEDS_FILE.format(FALL_DURATION)) as seed_file:
+            reader = csv.reader(seed_file)
+            random_seeds = [int(row[4]) for i, row in enumerate(reader) if i > 0][:N_SAMPLES]
+            seed_file.seek(0)
+            random_passengers = [int(row[3]) for i, row in enumerate(reader) if i > 0][:N_SAMPLES]
+            seed_file.seek(0)
+            random_staff = [int(row[5]) for i, row in enumerate(reader) if i > 0][:N_SAMPLES]
+            seed_file.seek(0)
+            random_normal_staff = [int(row[2]) for i, row in enumerate(reader) if i > 0][:N_SAMPLES]
 
     simulate_and_store(simulation_scenarios, results_file_path + results_file_name, N_SAMPLES,
-                       random_seeds, random_passengers, random_staff)
+                       random_seeds, random_passengers, random_staff, random_normal_staff)
     metrics = pd.DataFrame([perform_analysis("adaptive-support", simulation_scenarios,
                                              results_file_path, results_file_name)])
     metrics.to_csv(WORKSPACE_FOLDER + "data/metrics_{}_{}_{}.csv".format(STRAT_NAME, N_SAMPLES, FALL_DURATION))

@@ -30,8 +30,8 @@ TPLT_NAME = config['TEMPLATES SETTING']['TEMPLATE_NAME']
 TPLT = TPLT_PATH + TPLT_NAME + TPLT_EXT
 QUERY_EXT = config['TEMPLATES SETTING']['QUERY_EXT']
 
-QUERY_TPLT = """strategy EndMinT = minE (evac_time) [<=TAU] : <> s.__end__
-saveStrategy(\"{}\", EndMinT)"""
+QUERY_TPLT = """strategy EndOptR = minE (r_payoff) [<=TAU] : <> s.__end__ and r_payoff<=TAU
+saveStrategy(\"{}\", EndOptR)"""
 
 UPP_PATH = config['UPPAAL SETTINGS']['UPPAAL_PATH']
 

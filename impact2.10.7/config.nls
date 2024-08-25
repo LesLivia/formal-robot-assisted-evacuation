@@ -1,7 +1,8 @@
 to setup-seed
-set starting-seed -1556794288
-  set N_PASSENGERS 485
-  set N_STAFF 8
+  set starting-seed 1838973243
+  set N_PASSENGERS 700
+  set N_NORMAL_STAFF 1
+  set N_STAFF 1
 end
 
 to setup-model
