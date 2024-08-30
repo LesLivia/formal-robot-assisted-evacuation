@@ -51,6 +51,9 @@ def generate_model(params: Dict[str, Any], strat_name: str):
                 tplt_lines[i] = tplt_lines[i].replace('**VICTIM_DIST**', str(params['DIST_V']))
             if '**FR_DIST**' in tplt_lines[i]:
                 tplt_lines[i] = tplt_lines[i].replace('**FR_DIST**', str(params['DIST_FR']))
+            if '**GI_PROB**' in tplt_lines[i]:
+                tplt_lines[i] = tplt_lines[i].replace('**GI_PROB**', str(int(params['GI_PROB']*100)))
+
 
     MODEL_FILE = MODEL_PATH + strat_name + TPLT_EXT
     with open(MODEL_FILE, 'w+') as model_file:

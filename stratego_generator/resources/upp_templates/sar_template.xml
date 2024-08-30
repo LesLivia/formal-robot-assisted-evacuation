@@ -89,6 +89,7 @@ r_payoff'==0 and
 evac_time'==0 and
 t&lt;=dist/speed</label>
 		</location>
+		<branchpoint id="id99" x="-323" y="-750"/>
 		<branchpoint id="id12" x="-102" y="-561"/>
 		<branchpoint id="id13" x="-263" y="-561"/>
 		<branchpoint id="id14" x="-382" y="-561"/>
@@ -135,13 +136,13 @@ t&lt;=dist/speed</label>
 			<source ref="id12"/>
 			<target ref="id10"/>
 			<label kind="assignment" x="-136" y="-535">t=0</label>
-			<label kind="probability" x="-136" y="-552">(1-r)*pi</label>
+			<label kind="probability" x="-136" y="-552">(1.0-r)</label>
 		</transition>
 		<transition id="id23">
 			<source ref="id13"/>
 			<target ref="id11"/>
 			<label kind="assignment" x="-297" y="-544">t=0</label>
-			<label kind="probability" x="-297" y="-561">(1-r)*pi</label>
+			<label kind="probability" x="-297" y="-561">(1.0-r)</label>
 		</transition>
 		<transition id="id24" controllable="false">
 			<source ref="id9"/>
@@ -154,7 +155,7 @@ t&lt;=dist/speed</label>
 			<source ref="id14"/>
 			<target ref="id9"/>
 			<label kind="assignment" x="-450" y="-552">t=0</label>
-			<label kind="probability" x="-416" y="-561">r*pi</label>
+			<label kind="probability" x="-416" y="-561">r</label>
 		</transition>
 		<transition id="id26" controllable="false">
 			<source ref="id8"/>
@@ -167,21 +168,27 @@ t&lt;=dist/speed</label>
 			<source ref="id15"/>
 			<target ref="id8"/>
 			<label kind="assignment" x="-612" y="-552">t=0</label>
-			<label kind="probability" x="-578" y="-561">r*pi</label>
+			<label kind="probability" x="-578" y="-561">r</label>
+		</transition>
+		<transition id="id98" controllable="false">
+			<source ref="id0"/>
+			<target ref="id99"/>
 		</transition>
 		<transition id="id28" controllable="false">
-			<source ref="id0"/>
+			<source ref="id99"/>
 			<target ref="id7"/>
+			<label kind="probability" x="-42" y="-450">100-**GI_PROB**</label>
 		</transition>
 		<transition id="id29" controllable="false">
-			<source ref="id0"/>
+			<source ref="id99"/>
 			<target ref="id6"/>
+			<label kind="probability" x="-42" y="-450">**GI_PROB**</label>
 		</transition>
 		<transition id="id30">
 			<source ref="id12"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-51" y="-433">set(TAU+1, 1.1, 0)</label>
-			<label kind="probability" x="-42" y="-450">r*fabs(N_PI-pi)</label>
+			<label kind="assignment" x="-51" y="-433">set(1000, 1.1, 0)</label>
+			<label kind="probability" x="-42" y="-450">r</label>
 			<nail x="0" y="-391"/>
 		</transition>
 		<transition id="id31" controllable="false">
@@ -191,8 +198,8 @@ t&lt;=dist/speed</label>
 		<transition id="id32">
 			<source ref="id13"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-212" y="-484">set(TAU+1, 1.3, 0)</label>
-			<label kind="probability" x="-195" y="-476">r*fabs(N_PI-pi)</label>
+			<label kind="assignment" x="-212" y="-484">set(1000, 1.3, 0)</label>
+			<label kind="probability" x="-195" y="-476">r</label>
 			<nail x="-161" y="-493"/>
 		</transition>
 		<transition id="id33" controllable="false">
@@ -202,8 +209,8 @@ t&lt;=dist/speed</label>
 		<transition id="id34">
 			<source ref="id14"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-408" y="-493">set(TAU+1, 0.5, 0)</label>
-			<label kind="probability" x="-382" y="-510">(1-r)*fabs(N_PI-pi)</label>
+			<label kind="assignment" x="-408" y="-493">set(1000, 0.5, 0)</label>
+			<label kind="probability" x="-382" y="-510">(1.0-r)</label>
 		</transition>
 		<transition id="id35" controllable="false">
 			<source ref="id2"/>
@@ -212,8 +219,8 @@ t&lt;=dist/speed</label>
 		<transition id="id36">
 			<source ref="id15"/>
 			<target ref="id5"/>
-			<label kind="assignment" x="-629" y="-442">set(TAU+1, 0.7, 0)</label>
-			<label kind="probability" x="-612" y="-467">(1-r)*fabs(N_PI-pi)</label>
+			<label kind="assignment" x="-629" y="-442">set(1000, 0.7, 0)</label>
+			<label kind="probability" x="-612" y="-467">(1.0-r)</label>
 			<nail x="-629" y="-416"/>
 		</transition>
 		<transition id="id37" controllable="false">

@@ -48,13 +48,17 @@ def process_regressors(regressors: List[Regressor], prob_gi: float, fallen_dist:
 
         if reg.state.state.locs[1].label == gi_label:
             if process_action(reg.best_actions[0]) in calibrated_decisions:
-                calibrated_decisions[process_action(reg.best_actions[0])] += reg.payoff * prob_gi
+                calibrated_decisions[
+                    process_action(reg.best_actions[0])] += reg.payoff * prob_gi if not adhoc_strat else reg.payoff
             else:
-                calibrated_decisions[process_action(reg.best_actions[0])] = reg.payoff * prob_gi
+                calibrated_decisions[
+                    process_action(reg.best_actions[0])] = reg.payoff * prob_gi if not adhoc_strat else reg.payoff
         else:
             if process_action(reg.best_actions[0]) in calibrated_decisions:
-                calibrated_decisions[process_action(reg.best_actions[0])] += reg.payoff * (1 - prob_gi)
+                calibrated_decisions[process_action(reg.best_actions[0])] += reg.payoff * (
+                        1 - prob_gi) if not adhoc_strat else reg.payoff
             else:
-                calibrated_decisions[process_action(reg.best_actions[0])] = reg.payoff * (1 - prob_gi)
+                calibrated_decisions[process_action(reg.best_actions[0])] = reg.payoff * (
+                        1 - prob_gi) if not adhoc_strat else reg.payoff
 
     return calibrated_decisions

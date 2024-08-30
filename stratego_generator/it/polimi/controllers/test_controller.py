@@ -81,7 +81,8 @@ if ADHOC_STRAT:
 
     strategy_name = 'end_min_t_{}_{}'.format(rat_deg, time_bound)
     params = {'TIME_BOUND': time_bound, 'WALKING_SPEED': walking_speed, 'RAT_DEG': rat_deg,
-              'DIST_V': int(math.ceil(float(sys.argv[8]) * 10)), 'DIST_FR': int(math.ceil(float(sys.argv[9]) * 10))}
+              'DIST_V': int(math.ceil(float(sys.argv[8]) * 10)), 'DIST_FR': int(math.ceil(float(sys.argv[9]) * 10)),
+              'GI_PROB': gi_prob}
 
     STRATEGY_PATH = config['STRATEGY SETTINGS']['STRATEGY_PATH'].format(strategy_name)
     if os.path.exists(STRATEGY_PATH):
