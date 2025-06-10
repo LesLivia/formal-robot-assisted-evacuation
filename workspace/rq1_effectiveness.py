@@ -3,13 +3,15 @@ import csv
 import os
 import statistics as st
 from bisect import bisect_left
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict, Any, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as ss
 import seaborn as sns
 from tqdm import tqdm
+
+from idea_logs_processor import process_decisions
 
 config = configparser.ConfigParser()
 config.read('./resources/config.ini')
@@ -22,6 +24,7 @@ out_prefix = 'out_'
 out_cols = ['number_of_passengers', 'number_of_staff_members', 'seed', 'helper-gender',
             'helper-culture', 'helper-age', 'fallen-gender', 'fallen-culture',
             'fallen-age', 'helper-fallen-distance', 'staff-fallen-distance', 'decision']
+GAMBIT_PATH = './data/gambit/IDEA-no-teleporting/formideable_gambit/exp_rvar_0.5_50_50_{}_gambit_results_from_IDEA.csv'
 out_data: List[Dict[str, float]] = []
 
 
@@ -48,7 +51,7 @@ def get_fall_length(tup):
 
 
 COUNT = 1
-STRAT = 'tosem_1.0_100'
+STRAT = 'idea_0.12_50'
 
 
 def count_decisions(seed):
@@ -66,6 +69,15 @@ def process_csv(file, strat_name):
     metrics: Dict[str, List[float]] = {}
     titles: List[str] = []
     seeds_with_time: Dict[str, Dict[str, Any]] = {}
+
+    gambit_times: List[Union[float, None]] = []
+    with open(GAMBIT_PATH.format(file.split('_')[-1].replace('.csv', ''))) as g_file:
+        reader = csv.reader(g_file)
+        for row in reader:
+            try:
+                gambit_times.append(float(row[1]))
+            except ValueError:
+                gambit_times.append(None)
 
     with open(CSV_PATH + '/' + file) as csvfile:
         reader = csv.reader(csvfile)
@@ -94,6 +106,8 @@ def process_csv(file, strat_name):
 
     processed_metrics = {key: get_metric(metrics[key]) for key in metrics}
 
+    metrics['gambit-support_evacuation_time'] = gambit_times
+
     return processed_metrics, seeds_with_time, metrics
 
 
@@ -119,101 +133,74 @@ for file in tqdm(os.listdir(CSV_PATH)):
 for key in exp_metrics:
     exp_metrics[key].sort(key=get_fall_length)
 
-configurations = ['no-support', 'staff-support', 'passenger-support', 'adaptive-support', 'gambit-support']
+configurations = ['no-support', 'staff-support', 'passenger-support', 'gambit-support', 'adaptive-support']
 metrics_keys = ['evacuation_time', 'victims', 'staff_requests']
 
-aggregate_score = False
-for key in exp_metrics:
-    print('\n\n\n-- RESULTS for strategy:{} --'.format(key))
-
-    if aggregate_score:
-        print('\n\t\t\t\t\t\t\t{}'.format('AGGREGATE SCORE'))
-        print('fall-length\t' + '\t'.join(configurations))
-
-        for length_value in exp_metrics[key]:
-            row = '{}\t\t\t'.format(length_value[1])
-
-            scores = []
-            for key_i, metric_key in enumerate(metrics_keys):
-                scores.append([])
-                for conf_i, conf in enumerate(configurations):
-                    try:
-                        scores[key_i][0] = min(scores[key_i][0], float(length_value[2][conf + '_' + metric_key]))
-                    except IndexError:
-                        scores[key_i].append(float(length_value[2][conf + '_' + metric_key]))
-                    try:
-                        scores[key_i][1] = max(scores[key_i][1], float(length_value[2][conf + '_' + metric_key]))
-                    except IndexError:
-                        scores[key_i].append(float(length_value[2][conf + '_' + metric_key]))
-                    try:
-                        scores[key_i][2].append(float(length_value[2][conf + '_' + metric_key]))
-                    except IndexError:
-                        scores[key_i].append([float(length_value[2][conf + '_' + metric_key])])
-
-            for conf_i, conf in enumerate(configurations):
-                aggr_score = sum(
-                    [(metric[2][conf_i] - metric[0]) / max((metric[1] - metric[0]), 1) for metric in scores])
-                row += '{:.1f}\t\t\t'.format(aggr_score)
-            print(row)
-
-    for metric_key in metrics_keys:
-        print('\n\t\t\t\t\t\t\t{}'.format(metric_key))
-        print('fall-length\t' + '\t'.join(configurations))
-        for length_value in exp_metrics[key]:
-            row = '{}\t\t\t'.format(length_value[1])
-            for conf in configurations:
-                try:
-                    row += '{:.1f}\t\t\t'.format(length_value[2][conf + '_' + metric_key])
-                except TypeError:
-                    row += 'None\t\t\t'
-                except KeyError:
-                    row += 'None\t\t\t'
-            print(row)
-
-fig, axs = plt.subplots(ncols=2, figsize=(12, 7), gridspec_kw={'width_ratios': [2, 1]})
+fig, axs = plt.subplots(ncols=2, figsize=(25, 7), gridspec_kw={'width_ratios': [2, 1]})
 
 t_evac = []
-fr_calls = [[], []]
+fr_calls = [[], [], []]
+
+IDEA_decisions = process_decisions(STRAT)
+fr_calls[1] = [sum([dec == 'call-staff' for dec in IDEA_decisions[k]]) for k in IDEA_decisions]
 
 for t_fall in all_times[STRAT]:
 
-    for i, conf in enumerate(configurations[:-1]):
+    for i, conf in enumerate(configurations):
         if len(t_evac) > i:
             t_evac[i].extend(t_fall[2][conf + '_evacuation_time'])
         else:
             t_evac.append(t_fall[2][conf + '_evacuation_time'])
 
     fr_calls[0].extend(t_fall[2]['staff-support' + '_staff_requests'])
-    fr_calls[1].extend(t_fall[2]['adaptive-support' + '_staff_requests'])
+    fr_calls[2].extend(t_fall[2]['adaptive-support' + '_staff_requests'])
 
-colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+# colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:red']
+colors = ['lightyellow', 'lightyellow', 'lightyellow', 'lightcyan', 'lightgreen']
 
-sns.boxplot(data=t_evac, ax=axs[0], showmeans=True,
-            meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
-sns.boxplot(data=fr_calls, ax=axs[1], showmeans=True, palette=[colors[1], colors[3]],
-            meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
+sns.boxplot(data=t_evac, ax=axs[0], showmeans=True, palette=colors, linewidth=1.5, linecolor='black', width=0.5,
+            meanprops={'marker': '^', 'markerfacecolor': 'black', 'markeredgecolor': 'black', 'markersize': '14'})
+sns.boxplot(data=fr_calls, ax=axs[1], showmeans=True, palette=[colors[1], colors[3], colors[4]],
+            linewidth=1.5, linecolor='black', width=0.5,
+            meanprops={'marker': '^', 'markerfacecolor': 'black', 'markeredgecolor': 'black', 'markersize': '14'})
 
-axs[0].set_ylim(200, 700)
-axs[0].set_xticks(np.arange(len(configurations[:-1])))
-axs[0].set_xticklabels(['no-support', 'staff-support', 'survivor-support', 'FormIdeAble'], fontsize=12)
-axs[0].set_ylabel('T_evac', fontsize=14)
+fontsize = 22
+axs[0].set_ylim(150, 700)
+axs[0].set_xticks(np.arange(len(configurations)))
+axs[0].set_xticklabels(['no-support', 'staff-support', 'survivor-support', 'IDEA', 'FormIDEAble'], fontsize=fontsize)
+axs[0].set_yticklabels(labels=[str(x) for x in range(100, 800, 100)], fontsize=fontsize - 4)
+axs[0].set_ylabel('T_evac', fontsize=fontsize)
 
-stat, pvalue = ss.mannwhitneyu(fr_calls[0], fr_calls[1])
-est, mag = VD_A(fr_calls[0], fr_calls[1])
-axs[1].set_title('p-value: {:.1E}, eff. size: {}'.format(pvalue, mag), fontsize=12)
-axs[1].set_xticklabels(['staff-support', 'FormIdeAble'], fontsize=12)
-axs[1].set_ylabel('FR calls', fontsize=14)
+stat, pvalue = ss.mannwhitneyu(fr_calls[0], fr_calls[2])
+stat_2, pvalue_2 = ss.mannwhitneyu(fr_calls[1], fr_calls[2])
+est, mag = VD_A(fr_calls[0], fr_calls[2])
+est_2, mag_2 = VD_A(fr_calls[1], fr_calls[2])
+title = ('(staff-support vs. FormIDEAble) p-value: {:.1E}, eff. size: {}\n '
+         '(IDEA vs. FormIDEAble) p-value: {:.1E}, eff. size: {}').format(
+    pvalue, mag, pvalue_2, mag_2)
+print(title)
+# axs[1].set_title(title ,fontsize=fontsize)
+axs[1].set_xticklabels(['staff-support', 'IDEA', 'FormIDEAble'], fontsize=fontsize)
+axs[1].set_yticklabels(labels=[str(x) for x in range(0, 45, 5)], fontsize=fontsize - 4)
+axs[1].set_ylabel('FR calls', fontsize=fontsize)
 
-plt.savefig('./rq2_box_{}_10_{}.pdf'.format(STRAT, COUNT), bbox_inches='tight')
+plt.savefig('./rq1_box_{}_10_{}.pdf'.format(STRAT, COUNT), bbox_inches='tight')
 plt.show()
 
-pairs = [(c1, c2) for i, c1 in enumerate(configurations[:-1]) for c2 in configurations[i + 1:-1]]
+pairs = [(c1, c2) for i, c1 in enumerate(configurations) for c2 in configurations[i + 1:]]
 
 for pair in pairs:
     i = configurations.index(pair[0])
     j = configurations.index(pair[1])
 
-    stat, pvalue = ss.mannwhitneyu(t_evac[i], t_evac[j])
-    est, mag = VD_A(t_evac[i], t_evac[j])
+    stat, pvalue = ss.mannwhitneyu(
+        [t for i_t, t in enumerate(t_evac[i]) if
+         t is not None and len(t_evac[j]) > i_t and t_evac[j][i_t] is not None],
+        [t for j_t, t in enumerate(t_evac[j]) if
+         t is not None and len(t_evac[i]) > j_t and t_evac[i][j_t] is not None])
+    est, mag = VD_A([t for i_t, t in enumerate(t_evac[i]) if
+                     t is not None and len(t_evac[j]) > i_t and t_evac[j][i_t] is not None],
+                    [t for j_t, t in enumerate(t_evac[j]) if
+                     t is not None and len(t_evac[i]) > j_t and t_evac[i][j_t] is not None])
 
     print('{} vs. {}: p-value {:.1E}, eff. size {}'.format(pair[0], pair[1], pvalue, mag))
