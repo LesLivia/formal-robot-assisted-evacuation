@@ -3,15 +3,6 @@ Towards Verified Robot-Controlled SaR Scenarios
 
 The repository contains a tool to generate and simulate formally verified strategies for Search-and-Rescue (SaR) robots in evacuation scenarios.
 
-The tool builds upon the work presented by [Gavidia-Calderon et al.][paper1]
-
-Authors:
-
-| Name                    | E-mail address           |
-|:------------------------|:-------------------------|
-| Gavidia-Calderon Carlos | cgavidiac@gmail.com      |
-| Lestingi Livia          | livia.lestingi@polimi.it |
-
 Project Structure
 -----------
 
@@ -46,11 +37,3 @@ Initialize Git submodules with:
 	git submodule update
 
 ---
-
-*Copyright &copy; 2024 Carlos Gavidia-Calderon, Livia Lestingi*
-
-[paper1]: https://doi.org/10.1145/3510455.3512791
-
-[uppaal]: https://uppaal.org/
-
-[stratego]: https://people.cs.aau.dk/~marius/stratego/

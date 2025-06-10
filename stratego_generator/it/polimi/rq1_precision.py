@@ -23,13 +23,13 @@ def viol_value(line):
     return int(fields[8].replace('\n', ''))
 
 
-INPUT_PARAMS = '../workspace/data/out_rq2_tosem_10.txt'
+INPUT_PARAMS = '../workspace/data/out_rq4_5.txt'
 params: List[Tuple[List[int], List[int], float, float, int, int, int]] = []
 with open(INPUT_PARAMS, 'r') as in_f:
     lines = in_f.readlines()
     params.extend([process_line(line) for line in tqdm(lines)])
 
-IN_SIM_VIOLATIONS = '../workspace/data/verification_rq2_tosem_10.txt'
+IN_SIM_VIOLATIONS = '../workspace/data/verification_rq4_5.txt'
 occ: Dict[Tuple[int, int, int], int] = dict()
 with open(IN_SIM_VIOLATIONS, 'r') as in_f:
     lines = in_f.readlines()

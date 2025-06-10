@@ -1,4 +1,5 @@
 import itertools
+import sys
 from typing import List, Union, Dict
 
 import numpy as np
@@ -14,7 +15,7 @@ class Design_Parameter:
 
 
 STEP_FLOAT = 0.5
-STEP_INT = 2
+STEP_INT = 10 if sys.argv[1] == 'hist' else 2
 
 
 def get_permutations(params: List[Design_Parameter], fixed_params: Dict[str, Union[float, int]]):

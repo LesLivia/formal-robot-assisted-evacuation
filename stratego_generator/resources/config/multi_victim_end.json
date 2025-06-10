@@ -1,25 +1,23 @@
 {
   "strat_name": "EndOptR",
-  "property": "agent_to_help==1 and s.__end__",
+  "exp_value": "r_payoff",
+  "property": "agent_to_help>=0 and PI_V[agent_to_help][2]==0 and s.__end__",
   "n_survivors": 1,
   "pi_survivors": {
     "s1": [
       2,
       1,
       0
-    ],
-    "s2": [
-      2,
-      1,
-      0
     ]
   },
+  "survivor_speed": 1,
+  "dist_fr": 15,
   "n_victims": 2,
   "pi_victims": {
     "v1": [
       0,
       1,
-      0
+      1
     ],
     "v2": [
       2,
