@@ -25,55 +25,14 @@ def VD_A(treatment: List[float], control: List[float]):
     return estimate, magnitude
 
 
+data = []
+
 # RQ1-related wall-clock plots
 
-files = {2: ['./resources/logs/multi_survivor_time.csv', './resources/logs/multi_victim_time.csv'],
-         4: ['./resources/logs/hist_x2_time.csv'], 9: ['./resources/logs/hist_x3_time.csv'],
-         16: ['./resources/logs/hist_x4_time.csv'], 25: ['./resources/logs/hist_x5_time.csv']}
+files_rq1 = {1: ['./resources/logs/wallclocktimes.csv']}
 
-data = []
-
-for i, model_size in enumerate(files):
-    for file in files[model_size]:
-        with open(file, 'r') as f:
-            reader = csv.reader(f)
-            if len(data) > i:
-                data[i].extend([float(row[3]) for row in reader])
-            else:
-                data.append([float(row[3]) for row in reader])
-
-fig, axs = plt.subplots(ncols=2, figsize=(9, 6), gridspec_kw={'width_ratios': [3, 1]})
-
-pvalues = []
-eff_sizes = []
-for v in data:
-    baseline = [0] * len(v)
-
-    stat, pvalue = ss.mannwhitneyu(baseline, v)
-    est, mag = VD_A(baseline, v)
-
-    pvalues.append(pvalue)
-    eff_sizes.append(mag)
-
-print(pvalues, eff_sizes)
-
-sns.boxplot(data=data, showmeans=True, ax=axs[0],
-            meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
-sns.pointplot(data=[sum(v) / len(v) for v in data], color='black', linewidth=1, ax=axs[0])
-
-axs[0].set_title('RQ1', fontsize=14)
-axs[0].set_xlabel('N_s x N_v', fontsize=14)
-axs[0].set_ylabel('Wall-clock time [s]', fontsize=14)
-axs[0].set_xticklabels([str(key) for key in files], fontsize=14)
-
-# RQ2-related wall-clock plots
-
-files = {1: ['./resources/logs/wallclocktimes.csv']}
-
-data = []
-
-for i, model_size in enumerate(files):
-    for file in files[model_size]:
+for i, model_size in enumerate(files_rq1):
+    for file in files_rq1[model_size]:
         with open(file, 'r') as f:
             reader = csv.reader(f)
             if len(data) > i:
@@ -88,13 +47,48 @@ est, mag = VD_A(baseline, data[0])
 
 print(pvalue, mag)
 
-sns.boxplot(data=data, showmeans=True, ax=axs[1],
+# RQ2-related wall-clock plots
+
+files_rq2 = {2: ['./resources/logs/multi_survivor_time.csv', './resources/logs/multi_victim_time.csv'],
+             4: ['./resources/logs/hist_x2_time.csv'], 9: ['./resources/logs/hist_x3_time.csv'],
+             16: ['./resources/logs/hist_x4_time.csv'], 25: ['./resources/logs/hist_x5_time.csv']}
+
+for i, model_size in enumerate(files_rq2):
+    for file in files_rq2[model_size]:
+        with open(file, 'r') as f:
+            reader = csv.reader(f)
+            if len(data) > i + 1:
+                data[i + 1].extend([float(row[3]) for row in reader])
+            else:
+                data.append([float(row[3]) for row in reader])
+
+plt.figure(figsize=(15, 7))
+
+pvalues = []
+eff_sizes = []
+for v in data:
+    baseline = [0] * len(v)
+
+    stat, pvalue = ss.mannwhitneyu(baseline, v)
+    est, mag = VD_A(baseline, v)
+
+    pvalues.append(pvalue)
+    eff_sizes.append(mag)
+
+print(pvalues, eff_sizes)
+
+sns.boxplot(data=data, showmeans=True, palette=['white'] * len(data), linewidth=1, linecolor='black', width=0.5,
             meanprops={'marker': '^', 'markerfacecolor': 'white', 'markeredgecolor': 'black', 'markersize': '9'})
-axs[1].set_ylim(0, 0.4)
-axs[1].set_title('RQ2', fontsize=14)
-axs[1].set_xlabel('N_s x N_v', fontsize=14)
-# axs[1].set_ylabel('Wall-clock time [s]', fontsize=14)
-axs[1].set_xticklabels([str(key) for key in files], fontsize=14)
+sns.pointplot(data=[sum(v) / len(v) for v in data], color='black', linewidth=1)
+
+fontsize=18
+
+# plt.title('RQ1', fontsize=fontsize)
+plt.xlabel('N_s x N_v', fontsize=fontsize)
+plt.ylabel('Wall-clock time [s]', fontsize=fontsize)
+files_rq1.update(files_rq2)
+plt.xticks(ticks=range(6), labels=[str(key) for key in files_rq1], fontsize=fontsize-2)
+plt.yticks(fontsize=fontsize-2)
 
 plt.savefig('./rq3.pdf', bbox_inches='tight')
 plt.show()
